@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analyses: {
+        Row: {
+          ai_suggestions: string[] | null
+          ats_score: number
+          created_at: string
+          experience_score: number
+          formatting_score: number
+          id: string
+          job_description: string
+          job_title: string | null
+          matched_skills: string[] | null
+          missing_skills: string[] | null
+          overall_score: number
+          resume_name: string
+          skills_match: number
+          strengths: string[] | null
+          user_id: string
+          weaknesses: string[] | null
+        }
+        Insert: {
+          ai_suggestions?: string[] | null
+          ats_score: number
+          created_at?: string
+          experience_score: number
+          formatting_score: number
+          id?: string
+          job_description: string
+          job_title?: string | null
+          matched_skills?: string[] | null
+          missing_skills?: string[] | null
+          overall_score: number
+          resume_name: string
+          skills_match: number
+          strengths?: string[] | null
+          user_id: string
+          weaknesses?: string[] | null
+        }
+        Update: {
+          ai_suggestions?: string[] | null
+          ats_score?: number
+          created_at?: string
+          experience_score?: number
+          formatting_score?: number
+          id?: string
+          job_description?: string
+          job_title?: string | null
+          matched_skills?: string[] | null
+          missing_skills?: string[] | null
+          overall_score?: number
+          resume_name?: string
+          skills_match?: number
+          strengths?: string[] | null
+          user_id?: string
+          weaknesses?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
