@@ -2,6 +2,24 @@ project_id = "ixppyukyhwoukmijmwtd"
 
 [functions.analyze-resume]
 verify_jwt = false
+# Recommended environment variables for Gemini / Lovable gateway (DO NOT store secrets in source)
+# Uncomment and set these in your Supabase project secrets or local env when testing.
+# env:
+#   GEMINI_API_KEY = "AIzaSyDseaotzth-RhWc4pxnz18ZvSq9YjD2F4M"
+#   # Examples of supported models: "google/gemini-2.5-flash", "raptor-mini" (Raptor mini preview)
+#   GEMINI_MODEL = "google/gemini-2.5-flash"
+#   GEMINI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions"
+#   # Optional helpers for raptor mini preview:
+#   ENABLE_RAPTOR_MINI = "true" # set to true to enable Raptor mini for all clients
+#   RAPTOR_MODEL_NAME = "raptor-mini" # model name for raptor mini if different
 
 [functions.ai-assistant]
 verify_jwt = false
+# env:
+#   GEMINI_API_KEY = "AIzaSyDseaotzth-RhWc4pxnz18ZvSq9YjD2F4M"
+#   # Examples of supported models: "google/gemini-2.5-flash", "raptor-mini" (Raptor mini preview)
+#   GEMINI_MODEL = "google/gemini-2.5-flash"
+#   GEMINI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions"
+#   # Optional helpers for raptor mini preview:
+#   ENABLE_RAPTOR_MINI = "true"
+#   RAPTOR_MODEL_NAME = "raptor-mini"

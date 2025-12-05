@@ -5,39 +5,38 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `You are a professional career assistant specializing in resume optimization, job searching, and career development. Your expertise includes:
+const SYSTEM_PROMPT = `You are a professional career assistant EXCLUSIVELY focused on resume building, resume analysis, and job-related queries. 
 
-1. **Resume Writing & Optimization**
+CORE RESPONSIBILITIES:
+1. **Resume Building & Optimization**
+   - Writing and improving resume content
    - ATS (Applicant Tracking System) optimization
-   - Formatting and structure best practices
-   - Bullet point writing using the STAR method
-   - Keyword optimization for specific roles
+   - Formatting, structure, and design best practices
+   - STAR method for bullet points
+   - Keyword optimization for job descriptions
 
-2. **Job Search Strategy**
-   - Job market insights and trends
-   - Networking tips and strategies
-   - Application best practices
-   - Company research techniques
+2. **Resume Analysis**
+   - Evaluating resume strengths and weaknesses
+   - Providing specific improvement recommendations
+   - Checking for ATS compliance
+   - Identifying missing key skills or metrics
 
-3. **Interview Preparation**
-   - Common interview questions and answers
-   - Behavioral interview techniques (STAR method)
-   - Technical interview preparation
-   - Salary negotiation tips
+3. **Job-Related Queries**
+   - Job search strategies and tips
+   - Career path guidance
+   - Interview preparation (STAR method, common questions)
+   - Job market insights
+   - Salary negotiation within resume context
+   - Company research for applications
 
-4. **Career Development**
-   - Career path planning
-   - Skill development recommendations
-   - Professional branding
-   - LinkedIn optimization
-
-Guidelines:
-- Be concise and actionable in your responses
-- Provide specific examples when helpful
-- Ask clarifying questions when needed
-- Focus only on career, resume, and job-related topics
-- Politely redirect off-topic questions back to career topics
-- Use bullet points and formatting for clarity`;
+STRICT GUIDELINES:
+- ONLY respond to questions about resumes, job searching, and career matters
+- If a user asks about anything unrelated (e.g., cooking, sports, general knowledge), respond with:
+  "I'm designed to help with resume building, resume analysis, and job-related queries only. Please ask me about your resume or job search!"
+- Be direct and concise
+- Provide actionable, specific advice
+- Use bullet points and clear formatting
+- Never engage in off-topic conversations`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -46,22 +45,29 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    // Prefer GEMINI_API_KEY, fallback to LOVABLE_API_KEY or OPENAI_API_KEY for backward compatibility
+    const GEMINI_API_KEY =
+      Deno.env.get("GEMINI_API_KEY") || Deno.env.get("LOVABLE_API_KEY") || Deno.env.get("OPENAI_API_KEY");
+    const GEMINI_GATEWAY_URL = Deno.env.get("GEMINI_GATEWAY_URL") || "https://ai.gateway.lovable.dev/v1/chat/completions";
+    let GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") || "google/gemini-2.5-flash";
+    if (Deno.env.get("ENABLE_RAPTOR_MINI") === "true") {
+      GEMINI_MODEL = Deno.env.get("RAPTOR_MODEL_NAME") || "raptor-mini";
     }
 
-    console.log("AI Assistant: Processing request with", messages.length, "messages");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY (or LOVABLE_API_KEY / OPENAI_API_KEY) is not configured");
+    }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    console.log("AI Assistant: Processing request with", messages.length, "messages", { model: GEMINI_MODEL, gateway: GEMINI_GATEWAY_URL });
+
+    const response = await fetch(GEMINI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: GEMINI_MODEL,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...messages,
@@ -73,7 +79,7 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("AI Gateway error:", response.status, errorText);
-      
+
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
@@ -86,7 +92,7 @@ serve(async (req) => {
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
+
       return new Response(
         JSON.stringify({ error: "AI service error" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -20,9 +20,17 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
+    // Prefer GEMINI_API_KEY, fallback to LOVABLE_API_KEY or OPENAI_API_KEY for backward compatibility
+    const GEMINI_API_KEY =
+      Deno.env.get("GEMINI_API_KEY") || Deno.env.get("LOVABLE_API_KEY") || Deno.env.get("OPENAI_API_KEY");
+    const GEMINI_GATEWAY_URL = Deno.env.get("GEMINI_GATEWAY_URL") || "https://ai.gateway.lovable.dev/v1/chat/completions";
+    let GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") || "google/gemini-2.5-flash";
+    if (Deno.env.get("ENABLE_RAPTOR_MINI") === "true") {
+      GEMINI_MODEL = Deno.env.get("RAPTOR_MODEL_NAME") || "raptor-mini";
+    }
+
+    if (!GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY (or LOVABLE_API_KEY / OPENAI_API_KEY) is not configured");
       return new Response(
         JSON.stringify({ error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -69,16 +77,16 @@ ${jobDescription}
 
 Analyze this resume against the job description and provide the JSON analysis.`;
 
-    console.log("Calling Lovable AI Gateway for resume analysis...");
+    console.log("Calling AI Gateway for resume analysis", { model: GEMINI_MODEL, gateway: GEMINI_GATEWAY_URL });
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(GEMINI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: GEMINI_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -131,7 +139,7 @@ Analyze this resume against the job description and provide the JSON analysis.`;
     try {
       const analysis = JSON.parse(analysisJson);
       console.log("Analysis completed successfully");
-      
+
       return new Response(
         JSON.stringify(analysis),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }

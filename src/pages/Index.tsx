@@ -133,6 +133,9 @@ export default function Index() {
               <div className="text-center mb-12">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                   <Badge variant="ai" className="mb-4"><Sparkles className="w-3 h-3 mr-1" />Powered by Gemini AI</Badge>
+                  {import.meta.env.VITE_GEMINI_MODEL && (
+                    <p className="text-xs text-muted-foreground mt-2">Model: {import.meta.env.VITE_GEMINI_MODEL}</p>
+                  )}
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">AI Resume<span className="text-gradient"> Analyzer</span></h1>
                   <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.</p>
                   {!user && <p className="text-sm text-muted-foreground mt-2"><button onClick={() => navigate("/auth")} className="text-accent hover:underline">Sign in</button> to save your analysis history and compare resumes.</p>}
