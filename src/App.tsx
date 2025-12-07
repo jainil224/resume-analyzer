@@ -5,7 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AIAssistant } from "@/components/AIAssistant";
-import Index from "./pages/Index";
+import { AppLayout } from "@/components/AppLayout";
+import Dashboard from "./pages/Dashboard";
+import Analyze from "./pages/Analyze";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
 import Compare from "./pages/Compare";
@@ -16,18 +18,30 @@ const queryClient = new QueryClient();
 function AppContent() {
   const location = useLocation();
   const hideAssistant = location.pathname === "/auth";
+  const hideLayout = location.pathname === "/auth";
+
+  if (hideLayout) {
+    return (
+      <>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+        </Routes>
+        {!hideAssistant && <AIAssistant />}
+      </>
+    );
+  }
 
   return (
-    <>
+    <AppLayout>
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/analyze" element={<Analyze />} />
         <Route path="/history" element={<History />} />
         <Route path="/compare" element={<Compare />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!hideAssistant && <AIAssistant />}
-    </>
+    </AppLayout>
   );
 }
 
