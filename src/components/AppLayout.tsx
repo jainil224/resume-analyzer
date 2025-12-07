@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { Brain, Zap, LogIn, LogOut } from "lucide-react";
 
@@ -28,13 +29,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <div className="p-2 bg-accent-gradient rounded-lg">
                     <Brain className="w-5 h-5 text-accent-foreground" />
                   </div>
-                  <span className="font-bold text-lg">ResumeAI</span>
-                  <Badge variant="ai" className="hidden sm:flex">
+                  <span className="font-bold text-lg hidden sm:inline">ResumeAI</span>
+                  <Badge variant="ai" className="hidden md:flex">
                     <Zap className="w-3 h-3 mr-1" />AI Powered
                   </Badge>
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <ThemeToggle />
                 {!authLoading && (
                   user ? (
                     <Button variant="ghost" onClick={() => signOut()}>
@@ -50,7 +52,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             </div>
           </header>
-          <main className="flex-1">
+          <main className="flex-1 overflow-auto">
             {children}
           </main>
         </div>
