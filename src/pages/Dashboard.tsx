@@ -1,38 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, History, Users, Sparkles, Target, Shield, TrendingUp, ArrowRight } from "lucide-react";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { StatsCards } from "@/components/dashboard/StatsCards";
+import { ATSDistributionChart } from "@/components/dashboard/ATSDistributionChart";
+import { SkillsChart } from "@/components/dashboard/SkillsChart";
+import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { SkillGapAnalysis } from "@/components/dashboard/SkillGapAnalysis";
+import { ATSOptimizationTracker } from "@/components/dashboard/ATSOptimizationTracker";
+import { KeywordAnalysis } from "@/components/dashboard/KeywordAnalysis";
+import { AIRecommendations } from "@/components/dashboard/AIRecommendations";
+import { UserProgressTracker } from "@/components/dashboard/UserProgressTracker";
+import { ExportCenter } from "@/components/dashboard/ExportCenter";
+import { SystemStatus } from "@/components/dashboard/SystemStatus";
+import { Sparkles, ArrowRight, FileText, Target, Shield, TrendingUp } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  const quickActions = [
-    {
-      title: "Analyze Resume",
-      description: "Get AI-powered feedback on your resume",
-      icon: FileText,
-      action: () => navigate("/analyze"),
-      primary: true,
-    },
-    {
-      title: "View History",
-      description: "See your past analyses",
-      icon: History,
-      action: () => navigate("/history"),
-      disabled: !user,
-    },
-    {
-      title: "Compare Resumes",
-      description: "Compare multiple resume analyses",
-      icon: Users,
-      action: () => navigate("/compare"),
-      disabled: !user,
-    },
-  ];
+  const { data, loading } = useDashboardData();
 
   const features = [
     { icon: Target, title: "Skill Matching", desc: "AI identifies matching & missing skills" },
@@ -40,93 +28,151 @@ export default function Dashboard() {
     { icon: TrendingUp, title: "Smart Suggestions", desc: "Personalized improvement tips" },
   ];
 
-  return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <Badge variant="ai" className="mb-4">
-          <Sparkles className="w-3 h-3 mr-1" />Powered by Gemini AI
-        </Badge>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-          Welcome to <span className="text-gradient">ResumeAI</span>
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
-        </p>
-        {!user && (
-          <p className="text-sm text-muted-foreground mt-2">
+  // Get AI suggestions from most recent analysis
+  const latestSuggestions = data?.recentAnalyses[0]?.ai_suggestions || [];
+
+  if (!user) {
+    // Non-authenticated view - show landing content
+    return (
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <Badge variant="ai" className="mb-4">
+            <Sparkles className="w-3 h-3 mr-1" />Powered by Gemini AI
+          </Badge>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+            Welcome to <span className="text-gradient">ResumeAI</span>
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
+          </p>
+          <p className="text-sm text-muted-foreground mt-4">
             <button onClick={() => navigate("/auth")} className="text-accent hover:underline">
               Sign in
             </button>{" "}
-            to save your analysis history and compare resumes.
+            to access your personalized dashboard and save your analysis history.
           </p>
-        )}
-      </motion.div>
+        </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid md:grid-cols-3 gap-4 mb-12"
-      >
-        {features.map((feature) => (
-          <Card key={feature.title} variant="glass" className="p-4 text-center">
-            <div className="inline-flex p-3 bg-accent/10 rounded-xl mb-3">
-              <feature.icon className="w-6 h-6 text-accent" />
-            </div>
-            <h3 className="font-semibold mb-1">{feature.title}</h3>
-            <p className="text-sm text-muted-foreground">{feature.desc}</p>
-          </Card>
-        ))}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
-      >
-        {quickActions.map((action) => (
-          <Card
-            key={action.title}
-            variant={action.primary ? "elevated" : "default"}
-            className={`cursor-pointer transition-all hover:shadow-lg ${action.disabled ? "opacity-50" : ""}`}
-            onClick={action.disabled ? undefined : action.action}
-          >
-            <CardHeader>
-              <div className={`inline-flex p-3 rounded-xl mb-2 ${action.primary ? "bg-accent-gradient" : "bg-accent/10"}`}>
-                <action.icon className={`w-6 h-6 ${action.primary ? "text-accent-foreground" : "text-accent"}`} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid md:grid-cols-3 gap-4 mb-12"
+        >
+          {features.map((feature) => (
+            <div key={feature.title} className="p-6 rounded-xl bg-card border border-border text-center">
+              <div className="inline-flex p-3 bg-accent/10 rounded-xl mb-3">
+                <feature.icon className="w-6 h-6 text-accent" />
               </div>
-              <CardTitle className="text-lg">{action.title}</CardTitle>
-              <CardDescription>{action.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant={action.primary ? "hero" : "outline"}
-                className="w-full"
-                disabled={action.disabled}
-              >
-                {action.primary && <Sparkles className="w-4 h-4" />}
-                Get Started
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              {action.disabled && (
-                <p className="text-xs text-muted-foreground mt-2 text-center">Sign in required</p>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+              <h3 className="font-semibold mb-1">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground">{feature.desc}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-center"
+        >
+          <Button variant="hero" size="xl" onClick={() => navigate("/analyze")}>
+            <FileText className="w-5 h-5" />
+            Analyze Resume Now
+            <ArrowRight className="w-5 h-5" />
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-6 space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+      >
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's your resume analytics overview.</p>
+        </div>
+        <Button variant="hero" onClick={() => navigate("/analyze")}>
+          <Sparkles className="w-4 h-4" />
+          New Analysis
+        </Button>
       </motion.div>
 
-      <footer className="border-t border-border/50 py-6 mt-12">
-        <div className="text-center text-sm text-muted-foreground">
-          <p>AI Resume Analyzer • Powered by Gemini Flash</p>
+      {/* Quick Stats */}
+      <StatsCards
+        totalResumes={data?.totalResumes || 0}
+        analyzedResumes={data?.analyzedResumes || 0}
+        totalCandidates={data?.totalResumes || 0}
+        averageAtsScore={data?.averageAtsScore || 0}
+        skillGapsDetected={data?.skillGapsDetected || 0}
+      />
+
+      {/* Charts Row */}
+      <div className="grid lg:grid-cols-3 gap-4">
+        <ATSDistributionChart distribution={data?.atsDistribution || { low: 0, medium: 0, high: 0 }} />
+        <div className="lg:col-span-2">
+          <SkillsChart
+            topSkills={data?.topSkills || []}
+            missingSkills={data?.missingSkills || []}
+          />
         </div>
-      </footer>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid lg:grid-cols-3 gap-4">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-4">
+          <RecentActivity analyses={data?.recentAnalyses || []} />
+          <AIRecommendations suggestions={latestSuggestions} />
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-4">
+          <SkillGapAnalysis
+            missingSkills={data?.missingSkills || []}
+            totalAnalyses={data?.totalResumes || 0}
+          />
+          <ATSOptimizationTracker
+            averageAtsScore={data?.averageAtsScore || 0}
+            totalAnalyses={data?.totalResumes || 0}
+            atsDistribution={data?.atsDistribution || { low: 0, medium: 0, high: 0 }}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KeywordAnalysis
+          usedKeywords={data?.keywordStats?.used || []}
+          missingKeywords={data?.keywordStats?.missing || []}
+        />
+        <UserProgressTracker
+          profileCompletion={data?.progressStats?.profileCompletion || 0}
+          resumeStrength={data?.progressStats?.resumeStrength || 0}
+          skillsImprovement={data?.progressStats?.skillsImprovement || 0}
+        />
+        <ExportCenter />
+        <SystemStatus totalAnalyses={data?.totalResumes || 0} />
+      </div>
     </div>
   );
 }
