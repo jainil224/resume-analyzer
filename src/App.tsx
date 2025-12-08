@@ -11,7 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import Analyze from "./pages/Analyze";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
-import Compare from "./pages/Compare";
+import Candidates from "./pages/Candidates";
+import CandidateProfile from "./pages/CandidateProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,7 +39,8 @@ function AppContent() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/analyze" element={<Analyze />} />
         <Route path="/history" element={<History />} />
-        <Route path="/compare" element={<Compare />} />
+        <Route path="/candidates" element={<Candidates />} />
+        <Route path="/candidates/:id" element={<CandidateProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!hideAssistant && <AIAssistant />}

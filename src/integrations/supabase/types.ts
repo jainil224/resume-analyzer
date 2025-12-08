@@ -71,6 +71,160 @@ export type Database = {
         }
         Relationships: []
       }
+      candidate_notes: {
+        Row: {
+          candidate_id: string
+          content: string
+          created_at: string | null
+          id: string
+          note_type: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          candidate_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          note_type?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          candidate_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          note_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_notes_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_resumes: {
+        Row: {
+          ai_suggestions: string[] | null
+          ats_score: number | null
+          candidate_id: string
+          created_at: string | null
+          education_score: number | null
+          experience_score: number | null
+          formatting_score: number | null
+          grammar_score: number | null
+          id: string
+          job_description: string | null
+          matched_skills: string[] | null
+          missing_skills: string[] | null
+          overall_score: number | null
+          resume_name: string
+          resume_text: string | null
+          resume_url: string | null
+          skills_match: number | null
+          strengths: string[] | null
+          user_id: string
+          version: number | null
+          weaknesses: string[] | null
+        }
+        Insert: {
+          ai_suggestions?: string[] | null
+          ats_score?: number | null
+          candidate_id: string
+          created_at?: string | null
+          education_score?: number | null
+          experience_score?: number | null
+          formatting_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          job_description?: string | null
+          matched_skills?: string[] | null
+          missing_skills?: string[] | null
+          overall_score?: number | null
+          resume_name: string
+          resume_text?: string | null
+          resume_url?: string | null
+          skills_match?: number | null
+          strengths?: string[] | null
+          user_id: string
+          version?: number | null
+          weaknesses?: string[] | null
+        }
+        Update: {
+          ai_suggestions?: string[] | null
+          ats_score?: number | null
+          candidate_id?: string
+          created_at?: string | null
+          education_score?: number | null
+          experience_score?: number | null
+          formatting_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          job_description?: string | null
+          matched_skills?: string[] | null
+          missing_skills?: string[] | null
+          overall_score?: number | null
+          resume_name?: string
+          resume_text?: string | null
+          resume_url?: string | null
+          skills_match?: number | null
+          strengths?: string[] | null
+          user_id?: string
+          version?: number | null
+          weaknesses?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_resumes_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidates: {
+        Row: {
+          applied_role: string
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          status: Database["public"]["Enums"]["candidate_status"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          applied_role: string
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["candidate_status"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          applied_role?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["candidate_status"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -79,7 +233,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      candidate_status:
+        | "pending"
+        | "reviewed"
+        | "shortlisted"
+        | "rejected"
+        | "selected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -206,6 +365,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      candidate_status: [
+        "pending",
+        "reviewed",
+        "shortlisted",
+        "rejected",
+        "selected",
+      ],
+    },
   },
 } as const

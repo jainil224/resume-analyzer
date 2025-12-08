@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Resume Analyzer", url: "/analyze", icon: FileText },
+  { title: "Candidates", url: "/candidates", icon: Users },
   { title: "History", url: "/history", icon: History },
-  { title: "Compare", url: "/compare", icon: Users },
 ];
 
 export function AppSidebar() {
