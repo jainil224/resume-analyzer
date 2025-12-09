@@ -68,6 +68,7 @@ export default function Analyze() {
       setAnalysisResults(results);
 
       if (user) {
+        // Save to analyses table for history
         await supabase.from("analyses").insert({
           user_id: user.id,
           resume_name: resumeFile?.name || "Pasted Resume",
@@ -84,7 +85,50 @@ export default function Analyze() {
           weaknesses: results.weaknesses,
           ai_suggestions: results.ai_suggestions,
         });
-        toast.success("Analysis saved to your history!");
+
+        // Extract candidate name from resume text or use file name
+        const resumeName = resumeFile?.name?.replace(/\.[^/.]+$/, "") || "Unknown Candidate";
+        
+        // Create a new candidate entry
+        const { data: candidateData, error: candidateError } = await supabase
+          .from("candidates")
+          .insert({
+            user_id: user.id,
+            name: resumeName,
+            email: `${resumeName.toLowerCase().replace(/\s+/g, '.')}@pending.com`,
+            applied_role: jobTitle.trim() || "Not Specified",
+            status: "pending",
+          })
+          .select()
+          .single();
+
+        if (!candidateError && candidateData) {
+          // Create candidate resume with analysis results
+          await supabase.from("candidate_resumes").insert({
+            candidate_id: candidateData.id,
+            user_id: user.id,
+            resume_name: resumeFile?.name || "Pasted Resume",
+            resume_text: textToAnalyze,
+            job_description: jobDescription.trim(),
+            overall_score: results.overall_score,
+            skills_match: results.skills_match,
+            experience_score: results.experience_score,
+            education_score: 0,
+            ats_score: results.ats_score,
+            formatting_score: results.formatting_score,
+            grammar_score: 0,
+            matched_skills: results.matched_skills,
+            missing_skills: results.missing_skills,
+            strengths: results.strengths,
+            weaknesses: results.weaknesses,
+            ai_suggestions: results.ai_suggestions,
+            analysis_status: "completed",
+            version: 1,
+          });
+          toast.success("Analysis saved! Candidate added to your candidates list.");
+        } else {
+          toast.success("Analysis saved to your history!");
+        }
       } else {
         toast.success("Analysis complete!");
       }
