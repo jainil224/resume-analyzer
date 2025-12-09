@@ -112,6 +112,7 @@ export type Database = {
       candidate_resumes: {
         Row: {
           ai_suggestions: string[] | null
+          analysis_status: string | null
           ats_score: number | null
           candidate_id: string
           created_at: string | null
@@ -135,6 +136,7 @@ export type Database = {
         }
         Insert: {
           ai_suggestions?: string[] | null
+          analysis_status?: string | null
           ats_score?: number | null
           candidate_id: string
           created_at?: string | null
@@ -158,6 +160,7 @@ export type Database = {
         }
         Update: {
           ai_suggestions?: string[] | null
+          analysis_status?: string | null
           ats_score?: number | null
           candidate_id?: string
           created_at?: string | null
@@ -192,33 +195,57 @@ export type Database = {
       candidates: {
         Row: {
           applied_role: string
+          communication_skills: number | null
           created_at: string | null
+          education: string | null
           email: string
+          experience_years: number | null
+          final_remarks: string | null
+          hr_notes: string | null
           id: string
+          interview_date: string | null
+          interview_status: string | null
           name: string
           phone: string | null
+          profile_picture_url: string | null
           status: Database["public"]["Enums"]["candidate_status"] | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           applied_role: string
+          communication_skills?: number | null
           created_at?: string | null
+          education?: string | null
           email: string
+          experience_years?: number | null
+          final_remarks?: string | null
+          hr_notes?: string | null
           id?: string
+          interview_date?: string | null
+          interview_status?: string | null
           name: string
           phone?: string | null
+          profile_picture_url?: string | null
           status?: Database["public"]["Enums"]["candidate_status"] | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           applied_role?: string
+          communication_skills?: number | null
           created_at?: string | null
+          education?: string | null
           email?: string
+          experience_years?: number | null
+          final_remarks?: string | null
+          hr_notes?: string | null
           id?: string
+          interview_date?: string | null
+          interview_status?: string | null
           name?: string
           phone?: string | null
+          profile_picture_url?: string | null
           status?: Database["public"]["Enums"]["candidate_status"] | null
           updated_at?: string | null
           user_id?: string

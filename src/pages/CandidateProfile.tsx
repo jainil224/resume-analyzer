@@ -13,27 +13,9 @@ import { Input } from "@/components/ui/input";
 import { ScoreCircle } from "@/components/ScoreCircle";
 import { SkillTag } from "@/components/SkillTag";
 import { 
-  ArrowLeft,
-  Mail,
-  Phone,
-  Briefcase,
-  Calendar,
-  Target,
-  TrendingUp,
-  TrendingDown,
-  FileText,
-  MessageSquare,
-  History,
-  Download,
-  Send,
-  Plus,
-  Trash2,
-  Eye,
-  GitCompare,
-  Sparkles,
-  BookOpen,
-  Award,
-  FileCheck
+  ArrowLeft, Mail, Phone, Briefcase, Calendar, Target, TrendingUp, TrendingDown,
+  FileText, MessageSquare, History, Download, Send, Plus, Trash2, Eye, GitCompare,
+  Sparkles, BookOpen, Award, FileCheck, GraduationCap, Share2
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +24,11 @@ import { format } from "date-fns";
 import { CandidateResumeUpload } from "@/components/candidates/CandidateResumeUpload";
 import { CandidateResumeComparison } from "@/components/candidates/CandidateResumeComparison";
 import { ATSScoreBreakdown } from "@/components/candidates/ATSScoreBreakdown";
+import { InterviewTracker } from "@/components/candidates/InterviewTracker";
+import { AdminNotesSection } from "@/components/candidates/AdminNotesSection";
+import { CandidatePerformanceChart } from "@/components/candidates/CandidatePerformanceChart";
+import { ShareResumeDialog } from "@/components/candidates/ShareResumeDialog";
+import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -273,6 +260,12 @@ export default function CandidateProfile() {
                   ))}
                 </SelectContent>
               </Select>
+              <ShareResumeDialog
+                candidateName={candidate.name}
+                candidateEmail={candidate.email}
+                resumeUrl={selectedResume?.resume_url}
+                suggestions={selectedResume?.ai_suggestions || []}
+              />
               <Button variant="outline" asChild>
                 <a href={`mailto:${candidate.email}`}>
                   <Send className="w-4 h-4 mr-2" />
@@ -403,6 +396,46 @@ export default function CandidateProfile() {
                 </CardContent>
               </Card>
             </motion.div>
+
+            {/* Interview Tracker */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+              <InterviewTracker
+                candidateId={candidate.id}
+                data={{
+                  interview_date: (candidate as any).interview_date,
+                  interview_status: (candidate as any).interview_status || "not_scheduled",
+                  hr_notes: (candidate as any).hr_notes
+                }}
+                onUpdate={fetchCandidateData}
+              />
+            </motion.div>
+
+            {/* Admin Notes */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+              <AdminNotesSection
+                candidateId={candidate.id}
+                data={{
+                  hr_notes: (candidate as any).hr_notes,
+                  communication_skills: (candidate as any).communication_skills || 0,
+                  final_remarks: (candidate as any).final_remarks
+                }}
+                onUpdate={fetchCandidateData}
+              />
+            </motion.div>
+
+            {/* Performance Chart */}
+            {selectedResume && (
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+                <CandidatePerformanceChart
+                  data={{
+                    skillStrength: selectedResume.skills_match,
+                    atsProgress: selectedResume.ats_score,
+                    resumeImprovement: selectedResume.formatting_score,
+                    overallScore: selectedResume.overall_score
+                  }}
+                />
+              </motion.div>
+            )}
           </div>
 
           {/* Right Column - Main Content */}
