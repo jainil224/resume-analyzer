@@ -1,35 +1,24 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { 
   Users, 
   Plus,
   Mail,
-  Phone,
   Eye,
-  MoreVertical,
-  Trash2,
-  Download,
-  Calendar,
-  Briefcase,
-  GraduationCap
+  Download
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ScoreCircle } from "@/components/ScoreCircle";
 import { CandidateFilters } from "@/components/candidates/CandidateFilters";
-import { QuickActions } from "@/components/candidates/QuickActions";
-import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
 import { DuplicateDetection } from "@/components/candidates/DuplicateDetection";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
@@ -308,7 +297,7 @@ export default function Candidates() {
           <DialogTrigger asChild>
             <Button className="bg-accent-gradient hover:opacity-90">
               <Plus className="w-4 h-4 mr-2" />
-              Add Candidate
+              Import Candidates
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
@@ -399,25 +388,40 @@ export default function Candidates() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-2 md:grid-cols-5 gap-4"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        {Object.entries(statusLabels).map(([key, label]) => {
-          const count = candidates.filter(c => c.status === key).length;
-          return (
-            <Card 
-              key={key} 
-              className={`bg-card-gradient border-border/50 cursor-pointer transition-all hover:scale-105 ${
-                statusFilter === key ? 'ring-2 ring-accent' : ''
-              }`}
-              onClick={() => setStatusFilter(statusFilter === key ? "all" : key)}
-            >
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold">{count}</p>
-                <p className="text-xs text-muted-foreground capitalize">{label}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
+        <Card className="bg-card-gradient border-border/50">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-primary">{candidates.length}</p>
+            <p className="text-sm text-muted-foreground">Total Candidates</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card-gradient border-border/50">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-foreground">
+              {candidates.filter(c => c.status === "selected").length}
+            </p>
+            <p className="text-sm text-muted-foreground">Selected</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card-gradient border-border/50">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-foreground">
+              {candidates.filter(c => c.status === "pending").length}
+            </p>
+            <p className="text-sm text-muted-foreground">Pending Review</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card-gradient border-border/50">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-success">
+              {candidates.length > 0 
+                ? Math.round(candidates.reduce((acc, c) => acc + (c.latestScore || 0), 0) / candidates.length)
+                : 0}%
+            </p>
+            <p className="text-sm text-muted-foreground">Avg ATS Score</p>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Advanced Filters */}
@@ -456,11 +460,11 @@ export default function Candidates() {
               <thead>
                 <tr className="border-b border-border/50 bg-muted/30">
                   <th className="text-left p-4 font-medium text-muted-foreground">Candidate</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Role & Experience</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Applied For</th>
                   <th className="text-left p-4 font-medium text-muted-foreground">ATS Score</th>
                   <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Quick Actions</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">More</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Upload Date</th>
+                  <th className="text-right p-4 font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -498,115 +502,66 @@ export default function Candidates() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="space-y-1">
-                          <Badge variant="outline" className="font-normal">
-                            <Briefcase className="w-3 h-3 mr-1" />
-                            {candidate.applied_role}
-                          </Badge>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>{candidate.experience_years || 0} yrs exp</span>
-                            {candidate.education && (
-                              <>
-                                <span>•</span>
-                                <span className="flex items-center gap-1">
-                                  <GraduationCap className="w-3 h-3" />
-                                  {candidate.education.substring(0, 20)}...
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
+                        <span className="text-foreground">{candidate.applied_role}</span>
                       </td>
                       <td className="p-4">
                         {candidate.latestScore !== undefined ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8">
-                              <ScoreCircle score={candidate.latestScore} size="sm" />
+                          <div className="flex items-center gap-3">
+                            <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full rounded-full transition-all ${
+                                  candidate.latestScore >= 80 ? 'bg-primary' : 
+                                  candidate.latestScore >= 60 ? 'bg-warning' : 'bg-destructive'
+                                }`}
+                                style={{ width: `${candidate.latestScore}%` }}
+                              />
                             </div>
-                            <div>
-                              <span className={`font-bold ${getScoreColor(candidate.latestScore)}`}>
-                                {candidate.latestScore}%
-                              </span>
-                              <div className="mt-0.5">
-                                <ResumeAnalysisStatus status={candidate.analysisStatus || "pending"} />
-                              </div>
-                            </div>
+                            <span className={`font-semibold ${getScoreColor(candidate.latestScore)}`}>
+                              {candidate.latestScore}%
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground text-sm">No resume</span>
+                          <span className="text-muted-foreground text-sm">—</span>
                         )}
                       </td>
-                      <td className="p-4">
-                        <Select
-                          value={candidate.status}
-                          onValueChange={(value) => {
-                            event?.stopPropagation();
-                            handleStatusChange(candidate.id, value as CandidateStatus);
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        <Badge 
+                          variant="outline" 
+                          className={`${statusColors[candidate.status]} cursor-pointer`}
+                          onClick={() => {
+                            const statuses: CandidateStatus[] = ["pending", "reviewed", "shortlisted", "rejected", "selected"];
+                            const currentIdx = statuses.indexOf(candidate.status);
+                            const nextStatus = statuses[(currentIdx + 1) % statuses.length];
+                            handleStatusChange(candidate.id, nextStatus);
                           }}
                         >
-                          <SelectTrigger 
-                            className={`w-32 h-8 text-xs border ${statusColors[candidate.status]}`}
-                            onClick={(e) => e.stopPropagation()}
+                          {statusLabels[candidate.status]}
+                        </Badge>
+                      </td>
+                      <td className="p-4">
+                        <span className="text-muted-foreground text-sm">
+                          {format(new Date(candidate.created_at), "yyyy-MM-dd")}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => navigate(`/candidates/${candidate.id}`)}
                           >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(statusLabels).map(([key, label]) => (
-                              <SelectItem key={key} value={key}>{label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </td>
-                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                        <QuickActions 
-                          candidateId={candidate.id}
-                          currentStatus={candidate.status}
-                          onStatusChange={fetchCandidates}
-                        />
-                      </td>
-                      <td className="p-4 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/candidates/${candidate.id}`);
-                            }}>
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`mailto:${candidate.email}`, '_blank');
-                            }}>
-                              <Mail className="w-4 h-4 mr-2" />
-                              Send Email
-                            </DropdownMenuItem>
-                            {candidate.phone && (
-                              <DropdownMenuItem onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(`tel:${candidate.phone}`, '_blank');
-                              }}>
-                                <Phone className="w-4 h-4 mr-2" />
-                                Call
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem 
-                              className="text-destructive"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCandidate(candidate.id);
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => toast.info("Download feature coming soon")}
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}
