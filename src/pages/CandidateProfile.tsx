@@ -15,7 +15,7 @@ import { SkillTag } from "@/components/SkillTag";
 import { 
   ArrowLeft, Mail, Phone, Briefcase, Calendar, Target, TrendingUp, TrendingDown,
   FileText, MessageSquare, History, Download, Send, Plus, Trash2, Eye, GitCompare,
-  Sparkles, BookOpen, Award, FileCheck, GraduationCap, Share2
+  Sparkles, BookOpen, Award, FileCheck, GraduationCap, Share2, LogIn
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +29,7 @@ import { AdminNotesSection } from "@/components/candidates/AdminNotesSection";
 import { CandidatePerformanceChart } from "@/components/candidates/CandidatePerformanceChart";
 import { ShareResumeDialog } from "@/components/candidates/ShareResumeDialog";
 import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
+import { mockCandidates, mockResumes, mockNotes } from "@/data/mockCandidates";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -92,6 +93,7 @@ export default function CandidateProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isDemo = !user || id?.startsWith("demo-");
 
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [resumes, setResumes] = useState<CandidateResume[]>([]);
@@ -105,11 +107,27 @@ export default function CandidateProfile() {
   const [compareResumes, setCompareResumes] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!user) {
+    if (id?.startsWith("demo-")) {
+      // Load mock data for demo mode
+      const mockCandidate = mockCandidates.find(c => c.id === id);
+      if (mockCandidate) {
+        setCandidate(mockCandidate as any);
+        const candidateResumes = mockResumes.filter(r => r.candidate_id === id) as CandidateResume[];
+        setResumes(candidateResumes);
+        if (candidateResumes.length > 0) {
+          setSelectedResumeId(candidateResumes[0].id);
+        }
+        const candidateNotes = mockNotes.filter(n => n.candidate_id === id) as CandidateNote[];
+        setNotes(candidateNotes);
+      } else {
+        navigate("/candidates");
+      }
+      setLoading(false);
+    } else if (!user) {
       navigate("/auth");
-      return;
+    } else if (id) {
+      fetchCandidateData();
     }
-    if (id) fetchCandidateData();
   }, [user, id, navigate]);
 
   const fetchCandidateData = async () => {
@@ -157,6 +175,12 @@ export default function CandidateProfile() {
   const handleStatusChange = async (newStatus: CandidateStatus) => {
     if (!candidate) return;
 
+    if (isDemo) {
+      setCandidate({ ...candidate, status: newStatus });
+      toast.success("Status updated (demo mode)");
+      return;
+    }
+
     const { error } = await supabase
       .from("candidates")
       .update({ status: newStatus })
@@ -174,6 +198,20 @@ export default function CandidateProfile() {
   const handleAddNote = async () => {
     if (!newNote.content.trim() || !candidate) {
       toast.error("Note content is required");
+      return;
+    }
+
+    if (isDemo) {
+      const demoNote = {
+        id: `note-demo-${Date.now()}`,
+        note_type: newNote.type,
+        content: newNote.content,
+        created_at: new Date().toISOString()
+      };
+      setNotes(prev => [demoNote, ...prev]);
+      toast.success("Note added (demo mode)");
+      setIsAddNoteOpen(false);
+      setNewNote({ content: "", type: "general" });
       return;
     }
 
@@ -196,6 +234,12 @@ export default function CandidateProfile() {
   };
 
   const handleDeleteNote = async (noteId: string) => {
+    if (isDemo) {
+      setNotes(prev => prev.filter(n => n.id !== noteId));
+      toast.success("Note deleted (demo mode)");
+      return;
+    }
+
     const { error } = await supabase.from("candidate_notes").delete().eq("id", noteId);
     if (error) {
       toast.error("Failed to delete note");
@@ -231,6 +275,22 @@ export default function CandidateProfile() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Demo Banner */}
+      {isDemo && (
+        <div className="bg-primary/10 border-b border-primary/20 px-4 py-3">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Eye className="w-5 h-5 text-primary" />
+              <span className="text-sm text-primary font-medium">Demo Mode - Viewing sample data</span>
+            </div>
+            <Button size="sm" onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
+              <LogIn className="w-4 h-4 mr-2" />
+              Login
+            </Button>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
