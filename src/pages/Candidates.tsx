@@ -7,12 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { 
   Users, 
   Plus,
   Mail,
   Eye,
-  Download
+  Download,
+  LogIn,
+  CheckCircle,
+  Clock,
+  XCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +25,9 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { CandidateFilters } from "@/components/candidates/CandidateFilters";
 import { DuplicateDetection } from "@/components/candidates/DuplicateDetection";
+import { QuickActions } from "@/components/candidates/QuickActions";
+import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
+import { mockCandidates } from "@/data/mockCandidates";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -78,14 +86,17 @@ export default function Candidates() {
   });
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isDemo = !user;
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-      return;
+    if (isDemo) {
+      // Load mock data for demo mode
+      setCandidates(mockCandidates as Candidate[]);
+      setLoading(false);
+    } else {
+      fetchCandidates();
     }
-    fetchCandidates();
-  }, [user, navigate]);
+  }, [user]);
 
   const fetchCandidates = async () => {
     const { data: candidatesData, error: candidatesError } = await supabase
@@ -131,6 +142,12 @@ export default function Candidates() {
   };
 
   const handleAddCandidate = async () => {
+    if (isDemo) {
+      toast.info("Login to add real candidates");
+      setIsAddDialogOpen(false);
+      return;
+    }
+
     if (!newCandidate.name || !newCandidate.email || !newCandidate.applied_role) {
       toast.error("Please fill in all required fields");
       return;
@@ -183,6 +200,10 @@ export default function Candidates() {
   };
 
   const handleDeleteCandidate = async (id: string) => {
+    if (isDemo) {
+      toast.info("Login to delete candidates");
+      return;
+    }
     const { error } = await supabase.from("candidates").delete().eq("id", id);
     if (error) {
       toast.error("Failed to delete candidate");
@@ -193,6 +214,15 @@ export default function Candidates() {
   };
 
   const handleStatusChange = async (id: string, newStatus: CandidateStatus) => {
+    if (isDemo) {
+      // Update local state for demo
+      setCandidates(prev => prev.map(c => 
+        c.id === id ? { ...c, status: newStatus } : c
+      ));
+      toast.success("Status updated (demo mode)");
+      return;
+    }
+
     const { error } = await supabase
       .from("candidates")
       .update({ status: newStatus })
@@ -277,6 +307,29 @@ export default function Candidates() {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Demo Banner */}
+      {isDemo && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/20 rounded-lg">
+              <Eye className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-primary">Demo Mode</p>
+              <p className="text-sm text-muted-foreground">Viewing sample data. Login to manage real candidates.</p>
+            </div>
+          </div>
+          <Button onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
+            <LogIn className="w-4 h-4 mr-2" />
+            Login
+          </Button>
+        </motion.div>
+      )}
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -462,9 +515,10 @@ export default function Candidates() {
                   <th className="text-left p-4 font-medium text-muted-foreground">Candidate</th>
                   <th className="text-left p-4 font-medium text-muted-foreground">Applied For</th>
                   <th className="text-left p-4 font-medium text-muted-foreground">ATS Score</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Analysis</th>
                   <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Upload Date</th>
-                  <th className="text-right p-4 font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Quick Actions</th>
+                  <th className="text-right p-4 font-medium text-muted-foreground">View</th>
                 </tr>
               </thead>
               <tbody>
@@ -510,7 +564,7 @@ export default function Candidates() {
                             <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                               <div 
                                 className={`h-full rounded-full transition-all ${
-                                  candidate.latestScore >= 80 ? 'bg-primary' : 
+                                  candidate.latestScore >= 80 ? 'bg-success' : 
                                   candidate.latestScore >= 60 ? 'bg-warning' : 'bg-destructive'
                                 }`}
                                 style={{ width: `${candidate.latestScore}%` }}
@@ -523,6 +577,9 @@ export default function Candidates() {
                         ) : (
                           <span className="text-muted-foreground text-sm">—</span>
                         )}
+                      </td>
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        <ResumeAnalysisStatus status={candidate.analysisStatus || "pending"} />
                       </td>
                       <td className="p-4" onClick={(e) => e.stopPropagation()}>
                         <Badge 
@@ -538,30 +595,32 @@ export default function Candidates() {
                           {statusLabels[candidate.status]}
                         </Badge>
                       </td>
-                      <td className="p-4">
-                        <span className="text-muted-foreground text-sm">
-                          {format(new Date(candidate.created_at), "yyyy-MM-dd")}
-                        </span>
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        {isDemo ? (
+                          <QuickActions 
+                            candidateId={candidate.id}
+                            currentStatus={candidate.status}
+                            onStatusChange={() => {
+                              toast.info("Login to use quick actions");
+                            }}
+                          />
+                        ) : (
+                          <QuickActions 
+                            candidateId={candidate.id}
+                            currentStatus={candidate.status}
+                            onStatusChange={fetchCandidates}
+                          />
+                        )}
                       </td>
                       <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8"
-                            onClick={() => navigate(`/candidates/${candidate.id}`)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8"
-                            onClick={() => toast.info("Download feature coming soon")}
-                          >
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={() => navigate(`/candidates/${candidate.id}`)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
                       </td>
                     </motion.tr>
                   ))}
