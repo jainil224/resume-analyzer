@@ -596,21 +596,13 @@ export default function Candidates() {
                         </Badge>
                       </td>
                       <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                        {isDemo ? (
-                          <QuickActions 
-                            candidateId={candidate.id}
-                            currentStatus={candidate.status}
-                            onStatusChange={() => {
-                              toast.info("Login to use quick actions");
-                            }}
-                          />
-                        ) : (
-                          <QuickActions 
-                            candidateId={candidate.id}
-                            currentStatus={candidate.status}
-                            onStatusChange={fetchCandidates}
-                          />
-                        )}
+                        <QuickActions 
+                          candidateId={candidate.id}
+                          currentStatus={candidate.status}
+                          onStatusChange={isDemo ? () => {} : fetchCandidates}
+                          onDelete={isDemo ? undefined : fetchCandidates}
+                          isDemo={isDemo}
+                        />
                       </td>
                       <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <Button 
