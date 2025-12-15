@@ -28,6 +28,7 @@ import { DuplicateDetection } from "@/components/candidates/DuplicateDetection";
 import { QuickActions } from "@/components/candidates/QuickActions";
 import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
 import { mockCandidates } from "@/data/mockCandidates";
+import { useLocalCandidates } from "@/hooks/useLocalCandidates";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -87,16 +88,18 @@ export default function Candidates() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const isDemo = !user;
+  const { localCandidates, deleteCandidate: deleteLocalCandidate } = useLocalCandidates();
 
   useEffect(() => {
     if (isDemo) {
-      // Load mock data for demo mode
-      setCandidates(mockCandidates as Candidate[]);
+      // Combine local candidates with mock data for demo mode
+      const combined = [...localCandidates, ...(mockCandidates as Candidate[])];
+      setCandidates(combined);
       setLoading(false);
     } else {
       fetchCandidates();
     }
-  }, [user]);
+  }, [user, localCandidates]);
 
   const fetchCandidates = async () => {
     const { data: candidatesData, error: candidatesError } = await supabase
@@ -600,7 +603,9 @@ export default function Candidates() {
                           candidateId={candidate.id}
                           currentStatus={candidate.status}
                           onStatusChange={isDemo ? () => {} : fetchCandidates}
-                          onDelete={isDemo ? undefined : fetchCandidates}
+                          onDelete={candidate.id.startsWith("local-") 
+                            ? () => deleteLocalCandidate(candidate.id) 
+                            : (isDemo ? undefined : fetchCandidates)}
                           isDemo={isDemo}
                         />
                       </td>
