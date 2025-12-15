@@ -395,12 +395,14 @@ export default function CandidateProfile() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-base">Resume Versions</CardTitle>
-                  <CandidateResumeUpload 
-                    candidateId={candidate.id} 
-                    userId={user!.id}
-                    currentVersion={resumes.length}
-                    onUploadComplete={fetchCandidateData}
-                  />
+                  {!isDemo && user && (
+                    <CandidateResumeUpload 
+                      candidateId={candidate.id} 
+                      userId={user.id}
+                      currentVersion={resumes.length}
+                      onUploadComplete={fetchCandidateData}
+                    />
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {resumes.length === 0 ? (
