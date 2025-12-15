@@ -73,25 +73,32 @@
   }
 
   .dark {
-    --background: 270 50% 6%;
-    --foreground: 0 0% 98%;
+    /* Background: #0D0F12 (Deep Black) */
+    --background: 216 28% 6%;
+    /* Title Text: #FFFFFF (White) */
+    --foreground: 0 0% 100%;
 
-    --card: 270 50% 9%;
-    --card-foreground: 0 0% 98%;
+    /* Card Background: #181A1E (Soft Dark Gray) */
+    --card: 220 13% 11%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 270 50% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 280 70% 60%;
-    --primary-foreground: 270 50% 6%;
+    /* Blue Accent: #2D7DFF (Electric Blue) */
+    --primary: 218 100% 59%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 40% 17%;
-    --secondary-foreground: 0 0% 98%;
+    /* Divider Line: #2A2D33 (Muted Gray) */
+    --secondary: 220 12% 18%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 270 40% 17%;
-    --muted-foreground: 270 20% 65%;
+    --muted: 220 12% 18%;
+    /* Body Text: #C9CBD2 (Soft Gray) */
+    --muted-foreground: 220 7% 81%;
 
-    --accent: 280 70% 55%;
+    /* Blue Highlight: #4EA3FF (Sky Blue) */
+    --accent: 210 100% 65%;
     --accent-foreground: 0 0% 100%;
 
     --success: 152 69% 40%;
@@ -100,15 +107,26 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 270 40% 17%;
-    --input: 270 40% 17%;
-    --ring: 280 70% 55%;
+    /* Divider Line: #2A2D33 */
+    --border: 220 12% 18%;
+    --input: 220 12% 18%;
+    --ring: 218 100% 59%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(270 50% 6%) 0%, hsl(280 50% 20%) 50%, hsl(290 50% 25%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(270 50% 9%) 0%, hsl(270 50% 7%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(218 100% 59%) 0%, hsl(210 100% 65%) 50%, hsl(200 100% 70%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(218 100% 59%) 0%, hsl(210 100% 65%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(220 13% 11%) 0%, hsl(216 28% 6%) 100%);
+
+    --sidebar-background: 216 28% 6%;
+    --sidebar-foreground: 220 7% 81%;
+    --sidebar-primary: 218 100% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 12% 18%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 12% 18%;
+    --sidebar-ring: 218 100% 59%;
   }
 }
 
