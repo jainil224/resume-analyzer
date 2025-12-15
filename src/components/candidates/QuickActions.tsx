@@ -1,5 +1,17 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X, Star } from "lucide-react";
+import { Check, X, Star, Trash2 } from "lucide-react";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -9,10 +21,19 @@ interface QuickActionsProps {
   candidateId: string;
   currentStatus: string;
   onStatusChange: () => void;
+  onDelete?: () => void;
+  isDemo?: boolean;
 }
 
-export function QuickActions({ candidateId, currentStatus, onStatusChange }: QuickActionsProps) {
+export function QuickActions({ candidateId, currentStatus, onStatusChange, onDelete, isDemo }: QuickActionsProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleAction = async (newStatus: CandidateStatus, message: string) => {
+    if (isDemo) {
+      toast.info("Login to use quick actions");
+      return;
+    }
+
     const { error } = await supabase
       .from("candidates")
       .update({ status: newStatus })
@@ -24,6 +45,28 @@ export function QuickActions({ candidateId, currentStatus, onStatusChange }: Qui
       toast.success(message);
       onStatusChange();
     }
+  };
+
+  const handleDelete = async () => {
+    if (isDemo) {
+      toast.info("Login to delete candidates");
+      return;
+    }
+
+    setIsDeleting(true);
+    const { error } = await supabase
+      .from("candidates")
+      .delete()
+      .eq("id", candidateId);
+
+    if (error) {
+      toast.error("Failed to delete candidate");
+    } else {
+      toast.success("Candidate deleted");
+      onDelete?.();
+      onStatusChange();
+    }
+    setIsDeleting(false);
   };
 
   return (
@@ -64,6 +107,37 @@ export function QuickActions({ candidateId, currentStatus, onStatusChange }: Qui
         <Star className="w-4 h-4 mr-1" />
         Save
       </Button>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => e.stopPropagation()}
+            disabled={isDeleting}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Candidate?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this candidate and all associated data including resumes and notes. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
