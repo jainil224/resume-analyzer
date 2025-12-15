@@ -736,14 +736,16 @@ export default function CandidateProfile() {
                 <FileText className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
                 <h3 className="font-medium mb-2">No Resume Analyzed</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Upload a resume to see the analysis
+                  {isDemo ? "Sample resume data is available in demo mode" : "Upload a resume to see the analysis"}
                 </p>
-                <CandidateResumeUpload 
-                  candidateId={candidate.id} 
-                  userId={user!.id}
-                  currentVersion={0}
-                  onUploadComplete={fetchCandidateData}
-                />
+                {!isDemo && user && (
+                  <CandidateResumeUpload 
+                    candidateId={candidate.id} 
+                    userId={user.id}
+                    currentVersion={0}
+                    onUploadComplete={fetchCandidateData}
+                  />
+                )}
               </Card>
             )}
           </div>
