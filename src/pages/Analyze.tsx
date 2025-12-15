@@ -11,6 +11,7 @@ import { AnalysisResults } from "@/components/AnalysisResults";
 import { LoadingAnalysis } from "@/components/LoadingAnalysis";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
 import { Sparkles, ArrowRight, FileText, Target } from "lucide-react";
 import { toast } from "sonner";
 
@@ -130,7 +131,34 @@ export default function Analyze() {
           toast.success("Analysis saved to your history!");
         }
       } else {
-        toast.success("Analysis complete!");
+        // Save to local storage for guests
+        const resumeName = resumeFile?.name?.replace(/\.[^/.]+$/, "") || "Unknown Candidate";
+        const localCandidate: LocalCandidate = {
+          id: `local-${Date.now()}`,
+          name: resumeName,
+          email: `${resumeName.toLowerCase().replace(/\s+/g, '.')}@pending.com`,
+          phone: null,
+          applied_role: jobTitle.trim() || "Not Specified",
+          status: "pending",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          education: null,
+          experience_years: 0,
+          profile_picture_url: null,
+          interview_date: null,
+          interview_status: "not_scheduled",
+          latestScore: results.overall_score,
+          analysisStatus: "completed",
+          matchedSkills: results.matched_skills,
+          missingSkills: results.missing_skills,
+          resumeText: textToAnalyze,
+          jobDescription: jobDescription.trim(),
+          strengths: results.strengths,
+          weaknesses: results.weaknesses,
+          aiSuggestions: results.ai_suggestions,
+        };
+        saveLocalCandidate(localCandidate);
+        toast.success("Analysis complete! Candidate added to your local list.");
       }
     } catch (error) {
       console.error("Analysis error:", error);

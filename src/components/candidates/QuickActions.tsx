@@ -48,23 +48,34 @@ export function QuickActions({ candidateId, currentStatus, onStatusChange, onDel
   };
 
   const handleDelete = async () => {
-    if (isDemo) {
-      toast.info("Login to delete candidates");
+    // Check if this is a local candidate (id starts with "local-")
+    const isLocalCandidate = candidateId.startsWith("local-");
+    
+    if (isDemo && !isLocalCandidate) {
+      toast.info("Login to delete demo candidates");
       return;
     }
 
     setIsDeleting(true);
-    const { error } = await supabase
-      .from("candidates")
-      .delete()
-      .eq("id", candidateId);
-
-    if (error) {
-      toast.error("Failed to delete candidate");
-    } else {
+    
+    if (isLocalCandidate) {
+      // Local candidates are deleted via onDelete callback
       toast.success("Candidate deleted");
       onDelete?.();
       onStatusChange();
+    } else {
+      const { error } = await supabase
+        .from("candidates")
+        .delete()
+        .eq("id", candidateId);
+
+      if (error) {
+        toast.error("Failed to delete candidate");
+      } else {
+        toast.success("Candidate deleted");
+        onDelete?.();
+        onStatusChange();
+      }
     }
     setIsDeleting(false);
   };
