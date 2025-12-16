@@ -20,7 +20,7 @@ type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "se
 interface QuickActionsProps {
   candidateId: string;
   currentStatus: string;
-  onStatusChange: () => void;
+  onStatusChange: (newStatus?: CandidateStatus) => void;
   onDelete?: () => void;
   isDemo?: boolean;
 }
@@ -30,7 +30,9 @@ export function QuickActions({ candidateId, currentStatus, onStatusChange, onDel
 
   const handleAction = async (newStatus: CandidateStatus, message: string) => {
     if (isDemo) {
-      toast.info("Login to use quick actions");
+      // In demo mode, call onStatusChange with the new status to update local state
+      onStatusChange(newStatus);
+      toast.success(`${message} (demo mode)`);
       return;
     }
 

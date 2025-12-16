@@ -602,7 +602,15 @@ export default function Candidates() {
                         <QuickActions 
                           candidateId={candidate.id}
                           currentStatus={candidate.status}
-                          onStatusChange={isDemo ? () => {} : fetchCandidates}
+                          onStatusChange={(newStatus) => {
+                            if (isDemo && newStatus) {
+                              setCandidates(prev => prev.map(c => 
+                                c.id === candidate.id ? { ...c, status: newStatus } : c
+                              ));
+                            } else if (!isDemo) {
+                              fetchCandidates();
+                            }
+                          }}
                           onDelete={candidate.id.startsWith("local-") 
                             ? () => deleteLocalCandidate(candidate.id) 
                             : (isDemo ? undefined : fetchCandidates)}
