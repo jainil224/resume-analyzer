@@ -45,10 +45,13 @@ export default function Dashboard() {
             <Sparkles className="w-3 h-3 mr-1" />Powered by Gemini AI
           </Badge>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            <span className="text-gradient">Resume Analyzer</span>
+            Welcome to <span className="text-gradient">Resume Analyzer</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
           </p>
           <p className="text-sm text-muted-foreground mt-4">
             <button onClick={() => navigate("/auth")} className="text-accent hover:underline">
