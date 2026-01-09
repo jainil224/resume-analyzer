@@ -14,7 +14,7 @@ import { AIRecommendations } from "@/components/dashboard/AIRecommendations";
 import { UserProgressTracker } from "@/components/dashboard/UserProgressTracker";
 import { ExportCenter } from "@/components/dashboard/ExportCenter";
 import { SystemStatus } from "@/components/dashboard/SystemStatus";
-import { Sparkles, ArrowRight, FileText, Target, Shield, TrendingUp } from "lucide-react";
+import { Sparkles, ArrowRight, FileText, Target, Shield, TrendingUp, Github, Linkedin } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -79,9 +79,27 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Footer */}
-        <div className="mt-auto pt-12 text-center">
+        <div className="mt-auto pt-12 text-center space-y-3">
+          <div className="flex items-center justify-center gap-4">
+            <a 
+              href="https://github.com/jainil224" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+            <a 
+              href="https://www.linkedin.com/in/jainil-patel-947b1a336/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </div>
           <p className="text-sm text-muted-foreground">
-            Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
+            © 2025 <span className="font-semibold text-foreground">Jainil Patel</span>
           </p>
         </div>
       </div>
