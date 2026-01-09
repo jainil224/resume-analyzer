@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { StatsCards } from "@/components/dashboard/StatsCards";
@@ -34,30 +33,18 @@ export default function Dashboard() {
   if (!user) {
     // Non-authenticated view - show landing content
     return (
-      <div className="container mx-auto px-4 py-8 md:py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12 min-h-[calc(100vh-120px)] flex flex-col">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <Badge variant="ai" className="mb-4">
-            <Sparkles className="w-3 h-3 mr-1" />Powered by Gemini AI
-          </Badge>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
             Welcome to <span className="text-gradient">Resume Analyzer</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
-          </p>
-          <p className="text-sm text-muted-foreground mt-4">
-            <button onClick={() => navigate("/auth")} className="text-accent hover:underline">
-              Sign in
-            </button>{" "}
-            to access your personalized dashboard and save your analysis history.
           </p>
         </motion.div>
 
@@ -90,6 +77,13 @@ export default function Dashboard() {
             <ArrowRight className="w-5 h-5" />
           </Button>
         </motion.div>
+
+        {/* Footer */}
+        <div className="mt-auto pt-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
+          </p>
+        </div>
       </div>
     );
   }
