@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Users, History } from "lucide-react";
+import { LayoutDashboard, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +15,6 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Resume Analyzer", url: "/analyze", icon: FileText },
-  { title: "Candidates", url: "/candidates", icon: Users },
-  { title: "History", url: "/history", icon: History },
 ];
 
 export function AppSidebar() {

@@ -1,20 +1,15 @@
 import { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useAuth } from "@/hooks/useAuth";
-import { Brain, Zap, LogIn, LogOut } from "lucide-react";
+import { Brain, Zap } from "lucide-react";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { user, signOut, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
 
   return (
     <SidebarProvider>
@@ -37,18 +32,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
               <div className="flex items-center gap-2">
                 <ThemeToggle />
-                {!authLoading && (
-                  user ? (
-                    <Button variant="ghost" onClick={() => signOut()}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Sign Out</span>
-                    </Button>
-                  ) : (
-                    <Button variant="outline" onClick={() => navigate("/auth")}>
-                      <LogIn className="w-4 h-4 mr-2" />Sign In
-                    </Button>
-                  )
-                )}
               </div>
             </div>
           </header>

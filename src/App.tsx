@@ -9,41 +9,19 @@ import { AIAssistant } from "@/components/AIAssistant";
 import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Analyze from "./pages/Analyze";
-import Auth from "./pages/Auth";
-import History from "./pages/History";
-import Candidates from "./pages/Candidates";
-import CandidateProfile from "./pages/CandidateProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
-  const location = useLocation();
-  const hideAssistant = location.pathname === "/auth";
-  const hideLayout = location.pathname === "/auth";
-
-  if (hideLayout) {
-    return (
-      <>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-        </Routes>
-        {!hideAssistant && <AIAssistant />}
-      </>
-    );
-  }
-
   return (
     <AppLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/analyze" element={<Analyze />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/candidates" element={<Candidates />} />
-        <Route path="/candidates/:id" element={<CandidateProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!hideAssistant && <AIAssistant />}
+      <AIAssistant />
     </AppLayout>
   );
 }
