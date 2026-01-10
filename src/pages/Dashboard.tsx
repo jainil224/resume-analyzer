@@ -81,22 +81,26 @@ export default function Dashboard() {
         {/* Footer */}
         <div className="mt-auto pt-12 text-center space-y-3">
           <div className="flex items-center justify-center gap-4">
-            <a 
+            <motion.a 
               href="https://github.com/jainil224" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
+              whileHover={{ scale: 1.2, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
             >
               <Github className="w-5 h-5" />
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
               href="https://www.linkedin.com/in/jainil-patel-947b1a336/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
+              whileHover={{ scale: 1.2, rotate: -5 }}
+              whileTap={{ scale: 0.9 }}
             >
               <Linkedin className="w-5 h-5" />
-            </a>
+            </motion.a>
           </div>
           <p className="text-sm text-muted-foreground">
             © 2025 <span className="font-semibold text-foreground">Jainil Patel</span>
