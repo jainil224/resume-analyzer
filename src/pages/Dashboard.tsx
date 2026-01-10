@@ -79,7 +79,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Footer */}
-        <div className="mt-auto pt-12 text-center space-y-3">
+        <div className="mt-auto pt-8 text-center space-y-3 border-t border-border/50 pt-6">
           <div className="flex items-center justify-center gap-4">
             <motion.a 
               href="https://github.com/jainil224" 
