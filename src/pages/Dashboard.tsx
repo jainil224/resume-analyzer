@@ -103,7 +103,7 @@ export default function Dashboard() {
             </motion.a>
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2025 <span className="font-semibold text-foreground">Jainil Patel</span>
+            Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
           </p>
         </div>
       </div>
