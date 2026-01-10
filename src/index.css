@@ -6,32 +6,33 @@
 
 @layer base {
   :root {
-    /* Pastel Blue & White palette */
-    /* Light Blue: #E3F2FD → HSL: 207 89% 94% */
-    --background: 207 89% 94%;
-    --foreground: 210 20% 20%;
+    /* Clean White & Black palette */
+    /* Primary Background: #FFFFFF (Pure White) */
+    --background: 0 0% 100%;
+    /* Text Primary: #1A1A1A (Dark Text) */
+    --foreground: 0 0% 10%;
 
-    /* White: #FFFFFF */
+    /* Card Background: #FFFFFF + border #E0E0E0 */
     --card: 0 0% 100%;
-    --card-foreground: 210 20% 20%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 20%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Primary - Sky Blue: #BBDEFB → HSL: 207 90% 86% */
-    --primary: 207 80% 55%;
+    /* Primary - Accent: #111111 (Near Black) */
+    --primary: 0 0% 7%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Soft Gray: #F5F5F5 → HSL: 0 0% 96% */
+    /* Secondary - Light Gray: #F5F5F5 */
     --secondary: 0 0% 96%;
-    --secondary-foreground: 210 20% 20%;
+    --secondary-foreground: 0 0% 10%;
 
-    /* Muted - Light Blue tint */
-    --muted: 207 60% 92%;
-    --muted-foreground: 210 15% 45%;
+    /* Muted - Text Secondary: #6B6B6B */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
 
-    /* Accent - Sky Blue */
-    --accent: 207 90% 60%;
+    /* Accent - Near Black */
+    --accent: 0 0% 7%;
     --accent-foreground: 0 0% 100%;
 
     /* Success - Green */
@@ -42,36 +43,41 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
+    /* Highlight CTA - Orange: #FF6B00 */
+    --highlight: 25 100% 50%;
+    --highlight-foreground: 0 0% 100%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 207 40% 85%;
-    --input: 207 40% 85%;
-    --ring: 207 80% 55%;
+    /* Border - Accent Soft: #E0E0E0 */
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 7%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
-    --gradient-hero: linear-gradient(135deg, hsl(207 80% 55%) 0%, hsl(207 90% 65%) 50%, hsl(200 85% 70%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(207 80% 55%) 0%, hsl(200 85% 65%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(207 89% 96%) 100%);
-    --gradient-score: linear-gradient(135deg, hsl(152 69% 40%) 0%, hsl(207 80% 55%) 100%);
+    /* Custom tokens - Black/White gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(0 0% 20%) 50%, hsl(0 0% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(0 0% 25%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    --gradient-score: linear-gradient(135deg, hsl(152 69% 40%) 0%, hsl(0 0% 7%) 100%);
     
-    --shadow-sm: 0 1px 2px 0 hsl(210 20% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(210 20% 20% / 0.08), 0 2px 4px -2px hsl(210 20% 20% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(210 20% 20% / 0.1), 0 4px 6px -4px hsl(210 20% 20% / 0.08);
-    --shadow-xl: 0 20px 25px -5px hsl(210 20% 20% / 0.1), 0 8px 10px -6px hsl(210 20% 20% / 0.08);
-    --shadow-glow: 0 0 40px hsl(207 80% 55% / 0.3);
-    --shadow-card: 0 4px 24px -4px hsl(210 20% 20% / 0.12);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.08), 0 2px 4px -2px hsl(0 0% 0% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.08);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.08);
+    --shadow-glow: 0 0 40px hsl(0 0% 0% / 0.15);
+    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.12);
 
-    --sidebar-background: 207 89% 96%;
-    --sidebar-foreground: 210 20% 30%;
-    --sidebar-primary: 207 80% 55%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 25%;
+    --sidebar-primary: 0 0% 7%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 207 60% 90%;
-    --sidebar-accent-foreground: 210 20% 20%;
-    --sidebar-border: 207 40% 88%;
-    --sidebar-ring: 207 80% 55%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 0 0% 7%;
   }
 
   .dark {

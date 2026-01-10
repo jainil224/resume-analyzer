@@ -276,7 +276,10 @@ export default function Analyze() {
                 <ArrowRight className="w-5 h-5" />
               </Button>
               <p className="text-xs text-muted-foreground mt-3">
-                {user ? "Analysis will be saved to your history" : "Free analysis • Sign in to save history"}
+                {user ? "Analysis will be saved to your history" : "Free analysis • No account required"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-6 pt-4 border-t border-border/50">
+                Made with ❤️ by Jainil Patel
               </p>
             </motion.div>
           </motion.div>
