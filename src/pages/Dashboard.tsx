@@ -14,6 +14,7 @@ import { AIRecommendations } from "@/components/dashboard/AIRecommendations";
 import { UserProgressTracker } from "@/components/dashboard/UserProgressTracker";
 import { ExportCenter } from "@/components/dashboard/ExportCenter";
 import { SystemStatus } from "@/components/dashboard/SystemStatus";
+import TrueFocus from "@/components/TrueFocus";
 import { Sparkles, ArrowRight, FileText, Target, Shield, TrendingUp, Github, Linkedin } from "lucide-react";
 
 export default function Dashboard() {
@@ -40,8 +41,16 @@ export default function Dashboard() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            Welcome to <span className="text-gradient">Resume Analyzer</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+            <TrueFocus 
+              sentence="Welcome to Resume Analyzer"
+              manualMode={false}
+              blurAmount={4}
+              borderColor="hsl(var(--primary))"
+              glowColor="hsl(var(--primary) / 0.5)"
+              animationDuration={0.5}
+              pauseBetweenAnimations={1.5}
+            />
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
