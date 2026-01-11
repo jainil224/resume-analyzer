@@ -13,7 +13,7 @@ export function ThemeToggle() {
         relative flex items-center gap-2 rounded-full px-4 py-2 
         transition-colors duration-300 cursor-pointer
         ${isDark 
-          ? "bg-foreground text-background" 
+          ? "bg-card text-foreground border border-border" 
           : "bg-secondary text-foreground border border-border"
         }
       `}
@@ -24,7 +24,7 @@ export function ThemeToggle() {
         className={`
           flex items-center justify-center w-8 h-8 rounded-full
           ${isDark 
-            ? "bg-background text-foreground order-first" 
+            ? "bg-primary text-primary-foreground order-first" 
             : "bg-background text-foreground order-last border border-border"
           }
         `}
