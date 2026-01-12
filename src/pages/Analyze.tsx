@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
 import { Sparkles, ArrowRight, FileText, Target } from "lucide-react";
 import { toast } from "sonner";
+import LightRays from "@/components/LightRays";
 
 interface AnalysisData {
   overall_score: number;
@@ -37,6 +39,8 @@ export default function Analyze() {
   const [analysisStep, setAnalysisStep] = useState(0);
   const [analysisResults, setAnalysisResults] = useState<AnalysisData | null>(null);
   const { user } = useAuth();
+  const { theme, resolvedTheme } = useTheme();
+  const isDark = theme === 'dark' || resolvedTheme === 'dark';
 
   const handleAnalyze = async () => {
     if (!resumeFile && !resumeText.trim()) {
@@ -178,7 +182,24 @@ export default function Analyze() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
+    <div className="container mx-auto px-4 py-8 md:py-12 relative">
+      {/* Light rays background - only in dark mode */}
+      {isDark && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#2D7DFF"
+            raysSpeed={1}
+            lightSpread={0.8}
+            rayLength={1.5}
+            followMouse={true}
+            mouseInfluence={0.08}
+            noiseAmount={0.05}
+            distortion={0.03}
+            fadeDistance={1.2}
+          />
+        </div>
+      )}
       <AnimatePresence mode="wait">
         {!analysisResults && !isAnalyzing && (
           <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

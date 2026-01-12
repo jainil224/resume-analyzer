@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ import { QuickActions } from "@/components/candidates/QuickActions";
 import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
 import { mockCandidates } from "@/data/mockCandidates";
 import { useLocalCandidates } from "@/hooks/useLocalCandidates";
+import LightRays from "@/components/LightRays";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -89,6 +91,8 @@ export default function Candidates() {
   const navigate = useNavigate();
   const isDemo = !user;
   const { localCandidates, deleteCandidate: deleteLocalCandidate } = useLocalCandidates();
+  const { theme, resolvedTheme } = useTheme();
+  const isDark = theme === 'dark' || resolvedTheme === 'dark';
 
   useEffect(() => {
     if (isDemo) {
@@ -309,7 +313,24 @@ export default function Candidates() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
+    <div className="min-h-screen bg-background p-6 space-y-6 relative">
+      {/* Light rays background - only in dark mode */}
+      {isDark && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#2D7DFF"
+            raysSpeed={1}
+            lightSpread={0.8}
+            rayLength={1.5}
+            followMouse={true}
+            mouseInfluence={0.08}
+            noiseAmount={0.05}
+            distortion={0.03}
+            fadeDistance={1.2}
+          />
+        </div>
+      )}
       {/* Demo Banner */}
       {isDemo && (
         <motion.div
