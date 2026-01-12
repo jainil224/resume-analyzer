@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,7 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
 import { Sparkles, ArrowRight, FileText, Target } from "lucide-react";
 import { toast } from "sonner";
-import LightRays from "@/components/LightRays";
+import { HeroLamp } from "@/components/ui/hero-lamp";
+import TrueFocus from "@/components/TrueFocus";
 
 interface AnalysisData {
   overall_score: number;
@@ -39,8 +39,6 @@ export default function Analyze() {
   const [analysisStep, setAnalysisStep] = useState(0);
   const [analysisResults, setAnalysisResults] = useState<AnalysisData | null>(null);
   const { user } = useAuth();
-  const { theme, resolvedTheme } = useTheme();
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
 
   const handleAnalyze = async () => {
     if (!resumeFile && !resumeText.trim()) {
@@ -182,40 +180,32 @@ export default function Analyze() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12 relative">
-      {/* Light rays background - only in dark mode */}
-      {isDark && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <LightRays
-            raysOrigin="top-center"
-            raysColor="#2D7DFF"
-            raysSpeed={1}
-            lightSpread={0.8}
-            rayLength={1.5}
-            followMouse={true}
-            mouseInfluence={0.08}
-            noiseAmount={0.05}
-            distortion={0.03}
-            fadeDistance={1.2}
-          />
-        </div>
-      )}
-      <AnimatePresence mode="wait">
-        {!analysisResults && !isAnalyzing && (
-          <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="text-center mb-12">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <Badge variant="ai" className="mb-4">
-                  <Sparkles className="w-3 h-3 mr-1" />Resume Analyzer
-                </Badge>
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-                  Analyze Your <span className="text-gradient">Resume</span>
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Upload your resume and job description to get instant AI-powered feedback.
-                </p>
-              </motion.div>
-            </div>
+    <HeroLamp className="min-h-0">
+      <div className="container mx-auto px-4 py-8 md:py-12 relative">
+        <AnimatePresence mode="wait">
+          {!analysisResults && !isAnalyzing && (
+            <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="text-center mb-12">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                  <Badge variant="ai" className="mb-4">
+                    <Sparkles className="w-3 h-3 mr-1" />Resume Analyzer
+                  </Badge>
+                  <div className="mb-4">
+                    <TrueFocus
+                      sentence="Analyze Your Resume"
+                      manualMode={false}
+                      blurAmount={4}
+                      borderColor="hsl(var(--primary))"
+                      glowColor="hsl(var(--primary) / 0.5)"
+                      animationDuration={0.5}
+                      pauseBetweenAnimations={1.5}
+                    />
+                  </div>
+                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Upload your resume and job description to get instant AI-powered feedback.
+                  </p>
+                </motion.div>
+              </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -324,7 +314,8 @@ export default function Analyze() {
             <AnalysisResults data={analysisResults} />
           </motion.div>
         )}
-      </AnimatePresence>
-    </div>
+        </AnimatePresence>
+      </div>
+    </HeroLamp>
   );
 }

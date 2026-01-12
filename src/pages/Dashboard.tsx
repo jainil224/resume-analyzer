@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import LightRays from "@/components/LightRays";
+import { HeroLamp } from "@/components/ui/hero-lamp";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ATSDistributionChart } from "@/components/dashboard/ATSDistributionChart";
 import { SkillsChart } from "@/components/dashboard/SkillsChart";
@@ -23,8 +22,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, loading } = useDashboardData();
-  const { theme, resolvedTheme } = useTheme();
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
 
   const features = [
     { icon: Target, title: "Skill Matching", desc: "AI identifies matching & missing skills" },
@@ -38,24 +35,8 @@ export default function Dashboard() {
   if (!user) {
     // Non-authenticated view - show landing content
     return (
-      <div className="container mx-auto px-4 py-8 md:py-12 min-h-[calc(100vh-120px)] flex flex-col relative">
-        {/* Light rays background - only in dark mode */}
-        {isDark && (
-          <div className="fixed inset-0 z-0 pointer-events-none">
-            <LightRays
-              raysOrigin="top-center"
-              raysColor="#2D7DFF"
-              raysSpeed={1}
-              lightSpread={0.8}
-              rayLength={1.5}
-              followMouse={true}
-              mouseInfluence={0.08}
-              noiseAmount={0.05}
-              distortion={0.03}
-              fadeDistance={1.2}
-            />
-          </div>
-        )}
+      <HeroLamp className="min-h-[calc(100vh-120px)]">
+        <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -137,6 +118,7 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+    </HeroLamp>
     );
   }
 
