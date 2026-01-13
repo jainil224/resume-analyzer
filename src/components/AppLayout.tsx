@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Brain, Zap } from "lucide-react";
+import { Robot3DChatbot } from "@/components/Robot3DChatbot";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -39,6 +40,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             {children}
           </main>
         </div>
+        <Robot3DChatbot />
       </div>
     </SidebarProvider>
   );
