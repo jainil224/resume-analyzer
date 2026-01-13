@@ -14,7 +14,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
 import { Sparkles, ArrowRight, FileText, Target } from "lucide-react";
 import { toast } from "sonner";
-import { HeroLamp } from "@/components/ui/hero-lamp";
 import TrueFocus from "@/components/TrueFocus";
 
 interface AnalysisData {
@@ -180,8 +179,7 @@ export default function Analyze() {
   };
 
   return (
-    <HeroLamp className="min-h-0">
-      <div className="container mx-auto px-4 py-8 md:py-12 relative">
+    <div className="container mx-auto px-4 py-8 md:py-12 relative">
         <AnimatePresence mode="wait">
           {!analysisResults && !isAnalyzing && (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -316,6 +314,5 @@ export default function Analyze() {
         )}
         </AnimatePresence>
       </div>
-    </HeroLamp>
   );
 }
