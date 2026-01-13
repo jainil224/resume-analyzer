@@ -15,28 +15,80 @@ interface Message {
   createdAt?: string;
 }
 
+// Expression types for the robot
+type RobotExpression = "idle" | "happy" | "thinking" | "waving" | "excited";
+
 // 3D Robot Avatar Component
-function Robot3DAvatar({ isHovered, mouseX, mouseY }: { isHovered: boolean; mouseX: number; mouseY: number }) {
+function Robot3DAvatar({ 
+  isHovered, 
+  mouseX, 
+  mouseY, 
+  expression = "idle",
+  size = "large"
+}: { 
+  isHovered: boolean; 
+  mouseX: number; 
+  mouseY: number;
+  expression?: RobotExpression;
+  size?: "small" | "large";
+}) {
   const { theme, resolvedTheme } = useTheme();
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
+  const [isBlinking, setIsBlinking] = useState(false);
+  
+  // Blink effect
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setIsBlinking(true);
+      setTimeout(() => setIsBlinking(false), 150);
+    }, 3000 + Math.random() * 2000);
+    
+    return () => clearInterval(blinkInterval);
+  }, []);
   
   // Calculate eye movement based on mouse position
   const eyeOffsetX = (mouseX - 0.5) * 6;
   const eyeOffsetY = (mouseY - 0.5) * 4;
+  
+  // Expression-based eye shapes
+  const getEyeStyle = () => {
+    switch (expression) {
+      case "happy":
+        return { scaleY: 0.6, borderRadius: "50% 50% 50% 50% / 0% 0% 100% 100%" };
+      case "excited":
+        return { scaleY: 1.2, scaleX: 1.1 };
+      case "thinking":
+        return { scaleY: 0.8, y: -2 };
+      default:
+        return { scaleY: isBlinking ? 0.1 : 1 };
+    }
+  };
+
+  const sizeClass = size === "small" ? "w-10 h-10" : "w-20 h-20";
 
   return (
     <motion.div 
-      className="relative w-20 h-20 cursor-pointer"
+      className={`relative ${sizeClass} cursor-pointer`}
       animate={{
         rotateY: (mouseX - 0.5) * 20,
         rotateX: -(mouseY - 0.5) * 15,
+        rotate: expression === "waving" ? [0, -5, 5, -5, 0] : 0,
       }}
-      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 100, 
+        damping: 15,
+        rotate: { duration: 0.5, repeat: expression === "waving" ? 2 : 0 }
+      }}
       style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
     >
       {/* Robot Head - Main sphere */}
       <motion.div 
         className="absolute inset-0 rounded-full shadow-2xl"
+        animate={{
+          scale: expression === "excited" ? [1, 1.05, 1] : 1,
+        }}
+        transition={{ duration: 0.3, repeat: expression === "excited" ? 3 : 0 }}
         style={{
           background: isDark 
             ? "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)"
@@ -60,65 +112,118 @@ function Robot3DAvatar({ isHovered, mouseX, mouseY }: { isHovered: boolean; mous
         >
           {/* Left Eye */}
           <motion.div 
-            className="absolute left-[18%] top-1/2 -translate-y-1/2 w-[28%] h-[55%] rounded-full"
+            className="absolute left-[18%] top-1/2 -translate-y-1/2 w-[28%] h-[55%] rounded-full overflow-hidden"
             style={{
               background: "linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.7) 100%)",
-              boxShadow: "0 0 12px hsl(var(--primary)/0.6), inset 0 1px 2px rgba(255,255,255,0.3)"
+              boxShadow: expression === "excited" 
+                ? "0 0 20px hsl(var(--primary)/0.8), inset 0 1px 2px rgba(255,255,255,0.3)"
+                : "0 0 12px hsl(var(--primary)/0.6), inset 0 1px 2px rgba(255,255,255,0.3)"
             }}
             animate={{
               x: eyeOffsetX,
               y: eyeOffsetY,
-              scale: isHovered ? 1.1 : 1
+              scale: isHovered ? 1.1 : 1,
+              ...getEyeStyle()
             }}
+            transition={{ duration: 0.15 }}
           >
             {/* Eye highlight */}
-            <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-white/60" />
+            <motion.div 
+              className="absolute top-1 left-1 w-2 h-2 rounded-full bg-white/60"
+              animate={{ opacity: isBlinking ? 0 : 1 }}
+            />
+            {/* Happy expression curve */}
+            {expression === "happy" && (
+              <motion.div 
+                className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              />
+            )}
           </motion.div>
           
           {/* Right Eye */}
           <motion.div 
-            className="absolute right-[18%] top-1/2 -translate-y-1/2 w-[28%] h-[55%] rounded-full"
+            className="absolute right-[18%] top-1/2 -translate-y-1/2 w-[28%] h-[55%] rounded-full overflow-hidden"
             style={{
               background: "linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.7) 100%)",
-              boxShadow: "0 0 12px hsl(var(--primary)/0.6), inset 0 1px 2px rgba(255,255,255,0.3)"
+              boxShadow: expression === "excited" 
+                ? "0 0 20px hsl(var(--primary)/0.8), inset 0 1px 2px rgba(255,255,255,0.3)"
+                : "0 0 12px hsl(var(--primary)/0.6), inset 0 1px 2px rgba(255,255,255,0.3)"
             }}
             animate={{
               x: eyeOffsetX,
               y: eyeOffsetY,
-              scale: isHovered ? 1.1 : 1
+              scale: isHovered ? 1.1 : 1,
+              ...getEyeStyle()
             }}
+            transition={{ duration: 0.15 }}
           >
             {/* Eye highlight */}
-            <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-white/60" />
+            <motion.div 
+              className="absolute top-1 left-1 w-2 h-2 rounded-full bg-white/60"
+              animate={{ opacity: isBlinking ? 0 : 1 }}
+            />
+            {expression === "happy" && (
+              <motion.div 
+                className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              />
+            )}
           </motion.div>
         </motion.div>
         
-        {/* Top circle detail */}
-        <div 
+        {/* Top circle detail - pulses when excited */}
+        <motion.div 
           className="absolute top-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-2"
           style={{ borderColor: "hsl(var(--primary)/0.4)" }}
+          animate={{
+            scale: expression === "excited" ? [1, 1.3, 1] : 1,
+            borderColor: expression === "excited" 
+              ? ["hsl(var(--primary)/0.4)", "hsl(var(--primary))", "hsl(var(--primary)/0.4)"]
+              : "hsl(var(--primary)/0.4)"
+          }}
+          transition={{ duration: 0.5, repeat: expression === "excited" ? Infinity : 0 }}
         />
         
-        {/* Left antenna */}
+        {/* Left antenna - waves when waving */}
         <motion.div 
-          className="absolute -left-1 top-1/4 w-2 h-4 rounded-full"
+          className="absolute -left-1 top-1/4 w-2 h-4 rounded-full origin-bottom"
           style={{
             background: isDark 
               ? "linear-gradient(180deg, #475569 0%, #1e293b 100%)"
               : "linear-gradient(180deg, #64748b 0%, #475569 100%)"
           }}
-          animate={{ rotate: isHovered ? -10 : 0 }}
+          animate={{ 
+            rotate: expression === "waving" 
+              ? [0, -30, 30, -30, 30, 0] 
+              : isHovered ? -10 : 0 
+          }}
+          transition={{ 
+            duration: expression === "waving" ? 0.8 : 0.3,
+            repeat: expression === "waving" ? 2 : 0
+          }}
         />
         
-        {/* Right antenna */}
+        {/* Right antenna - waves when waving */}
         <motion.div 
-          className="absolute -right-1 top-1/4 w-2 h-4 rounded-full"
+          className="absolute -right-1 top-1/4 w-2 h-4 rounded-full origin-bottom"
           style={{
             background: isDark 
               ? "linear-gradient(180deg, #475569 0%, #1e293b 100%)"
               : "linear-gradient(180deg, #64748b 0%, #475569 100%)"
           }}
-          animate={{ rotate: isHovered ? 10 : 0 }}
+          animate={{ 
+            rotate: expression === "waving" 
+              ? [0, 30, -30, 30, -30, 0] 
+              : isHovered ? 10 : 0 
+          }}
+          transition={{ 
+            duration: expression === "waving" ? 0.8 : 0.3,
+            repeat: expression === "waving" ? 2 : 0,
+            delay: 0.1
+          }}
         />
         
         {/* Decorative lines */}
@@ -126,19 +231,74 @@ function Robot3DAvatar({ isHovered, mouseX, mouseY }: { isHovered: boolean; mous
           className="absolute top-[15%] left-1/2 -translate-x-1/2 w-px h-2 rounded-full"
           style={{ background: "hsl(var(--primary)/0.5)" }}
         />
+        
+        {/* Cheek blush for happy expression */}
+        <AnimatePresence>
+          {expression === "happy" && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 0.6, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="absolute left-[12%] top-[55%] w-3 h-2 rounded-full"
+                style={{ background: "hsl(var(--primary)/0.3)" }}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 0.6, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="absolute right-[12%] top-[55%] w-3 h-2 rounded-full"
+                style={{ background: "hsl(var(--primary)/0.3)" }}
+              />
+            </>
+          )}
+        </AnimatePresence>
       </motion.div>
       
-      {/* Glow effect on hover */}
+      {/* Glow effect on hover or excited */}
       <motion.div
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           background: "radial-gradient(circle, hsl(var(--primary)/0.3) 0%, transparent 70%)"
         }}
         animate={{
-          opacity: isHovered ? 0.8 : 0,
-          scale: isHovered ? 1.3 : 1
+          opacity: isHovered || expression === "excited" ? 0.8 : 0,
+          scale: isHovered || expression === "excited" ? 1.3 : 1
         }}
       />
+      
+      {/* Sparkles for excited expression */}
+      <AnimatePresence>
+        {expression === "excited" && (
+          <>
+            {[...Array(4)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full"
+                style={{ background: "hsl(var(--primary))" }}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0,
+                  x: 40,
+                  y: 40
+                }}
+                animate={{ 
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0],
+                  x: 40 + Math.cos(i * Math.PI / 2) * 50,
+                  y: 40 + Math.sin(i * Math.PI / 2) * 50
+                }}
+                transition={{
+                  duration: 0.8,
+                  delay: i * 0.15,
+                  repeat: Infinity,
+                  repeatDelay: 0.5
+                }}
+              />
+            ))}
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -150,6 +310,7 @@ export function Robot3DChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
+  const [expression, setExpression] = useState<RobotExpression>("idle");
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const robotRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme } = useTheme();
@@ -181,15 +342,37 @@ export function Robot3DChatbot() {
     }
   }, [messages]);
 
+  // Update expression based on loading state
+  useEffect(() => {
+    if (isLoading) {
+      setExpression("thinking");
+    } else if (messages.length > 0 && messages[messages.length - 1].role === "assistant") {
+      setExpression("happy");
+      // Reset to idle after a delay
+      const timer = setTimeout(() => setExpression("idle"), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, messages]);
+
   const handleOpen = () => {
-    setIsOpen(true);
-    setMessages([
-      {
-        role: "assistant",
-        content: "👋 Hi! I'm your AI Resume Assistant. I can help you with:\n\n📄 **Resume Writing** - Creating compelling, ATS-friendly resumes\n💼 **Interview Prep** - Practice questions and techniques\n🎯 **Career Guidance** - Finding your career direction\n\nHow can I help you today?",
-        createdAt: new Date().toISOString(),
-      },
-    ]);
+    // Play waving animation first
+    setExpression("waving");
+    
+    setTimeout(() => {
+      setIsOpen(true);
+      setExpression("excited");
+      setMessages([
+        {
+          role: "assistant",
+          content: "👋 Hi! I'm your AI Resume Assistant. I can help you with:\n\n📄 **Resume Writing** - Creating compelling, ATS-friendly resumes\n💼 **Interview Prep** - Practice questions and techniques\n🎯 **Career Guidance** - Finding your career direction\n\nHow can I help you today?",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      
+      // Settle to happy after excited
+      setTimeout(() => setExpression("happy"), 2000);
+      setTimeout(() => setExpression("idle"), 4000);
+    }, 800);
   };
 
   const handleSend = async () => {
@@ -323,7 +506,8 @@ export function Robot3DChatbot() {
               <Robot3DAvatar 
                 isHovered={isHovered} 
                 mouseX={mousePosition.x} 
-                mouseY={mousePosition.y} 
+                mouseY={mousePosition.y}
+                expression={expression}
               />
             </motion.div>
             
@@ -359,8 +543,8 @@ export function Robot3DChatbot() {
               {/* Header with mini robot */}
               <div className="bg-primary p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 relative">
-                    <Robot3DAvatar isHovered={false} mouseX={0.5} mouseY={0.5} />
+                  <div className="w-10 h-10 relative scale-50 origin-center">
+                    <Robot3DAvatar isHovered={false} mouseX={0.5} mouseY={0.5} expression={expression} size="small" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary-foreground">AI Assistant</h3>
