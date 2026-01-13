@@ -29,7 +29,6 @@ import { QuickActions } from "@/components/candidates/QuickActions";
 import { ResumeAnalysisStatus } from "@/components/candidates/ResumeAnalysisStatus";
 import { mockCandidates } from "@/data/mockCandidates";
 import { useLocalCandidates } from "@/hooks/useLocalCandidates";
-import { HeroLamp } from "@/components/ui/hero-lamp";
 
 type CandidateStatus = "pending" | "reviewed" | "shortlisted" | "rejected" | "selected";
 
@@ -310,8 +309,7 @@ export default function Candidates() {
   }
 
   return (
-    <HeroLamp className="min-h-screen">
-      <div className="bg-background p-6 space-y-6 relative">
+    <div className="bg-background p-6 space-y-6 relative min-h-screen">
         {/* Demo Banner */}
       {isDemo && (
         <motion.div
@@ -645,7 +643,6 @@ export default function Candidates() {
           </div>
         </Card>
       </motion.div>
-      </div>
-    </HeroLamp>
+    </div>
   );
 }

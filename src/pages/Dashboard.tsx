@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { HeroLamp } from "@/components/ui/hero-lamp";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ATSDistributionChart } from "@/components/dashboard/ATSDistributionChart";
 import { SkillsChart } from "@/components/dashboard/SkillsChart";
@@ -35,8 +34,7 @@ export default function Dashboard() {
   if (!user) {
     // Non-authenticated view - show landing content
     return (
-      <HeroLamp className="min-h-[calc(100vh-120px)]">
-        <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col">
+      <div className="container mx-auto px-4 py-8 md:py-12 min-h-[calc(100vh-120px)] flex flex-col">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +116,6 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
-    </HeroLamp>
     );
   }
 
