@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Send, Bot, User, Loader2, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
+import { useRobotSounds } from "@/hooks/useRobotSounds";
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -315,6 +315,8 @@ export function Robot3DChatbot() {
   const robotRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme } = useTheme();
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
+  const { playSound } = useRobotSounds();
+  const prevExpressionRef = useRef<RobotExpression>("idle");
 
   // Track mouse position for 3D effect
   useEffect(() => {
@@ -354,9 +356,31 @@ export function Robot3DChatbot() {
     }
   }, [isLoading, messages]);
 
+  // Play sounds when expression changes
+  useEffect(() => {
+    if (prevExpressionRef.current !== expression) {
+      switch (expression) {
+        case "waving":
+          playSound("wave");
+          break;
+        case "happy":
+          playSound("happy");
+          break;
+        case "excited":
+          playSound("excited");
+          break;
+        case "thinking":
+          playSound("thinking");
+          break;
+      }
+      prevExpressionRef.current = expression;
+    }
+  }, [expression, playSound]);
+
   const handleOpen = () => {
     // Play waving animation first
     setExpression("waving");
+    playSound("open");
     
     setTimeout(() => {
       setIsOpen(true);
@@ -378,6 +402,7 @@ export function Robot3DChatbot() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    playSound("send");
     const userMessage = input.trim();
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: userMessage, createdAt: new Date().toISOString() }]);
@@ -444,10 +469,13 @@ export function Robot3DChatbot() {
             }
           }
         }
+        // Play message received sound when streaming is done
+        playSound("message");
       } else {
         const json = await res.json();
         const content = json.choices?.[0]?.message?.content || json.choices?.[0]?.text || JSON.stringify(json);
         setMessages((prev) => [...prev, { role: "assistant", content, createdAt: new Date().toISOString() }]);
+        playSound("message");
       }
     } catch (err) {
       console.error("Assistant error:", err);
@@ -473,6 +501,7 @@ export function Robot3DChatbot() {
   };
 
   const handleClose = () => {
+    playSound("close");
     setIsOpen(false);
     setMessages([]);
   };
