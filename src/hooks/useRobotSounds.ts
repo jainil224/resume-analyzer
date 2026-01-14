@@ -1,10 +1,27 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 
 type SoundType = 'wave' | 'happy' | 'excited' | 'thinking' | 'message' | 'send' | 'open' | 'close';
+
+const MUTE_STORAGE_KEY = 'robot-sounds-muted';
 
 // Web Audio API based sound generator
 export function useRobotSounds() {
   const audioContextRef = useRef<AudioContext | null>(null);
+  const [isMuted, setIsMuted] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
+    }
+    return false;
+  });
+
+  // Persist mute preference
+  useEffect(() => {
+    localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
+  }, [isMuted]);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted(prev => !prev);
+  }, []);
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
@@ -19,6 +36,8 @@ export function useRobotSounds() {
     type: OscillatorType = 'sine',
     volumeEnvelope?: { attack: number; decay: number; sustain: number; release: number }
   ) => {
+    if (isMuted) return;
+    
     try {
       const ctx = getAudioContext();
       const oscillator = ctx.createOscillator();
@@ -43,17 +62,21 @@ export function useRobotSounds() {
     } catch (e) {
       console.warn('Sound playback failed:', e);
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, isMuted]);
 
   const playSequence = useCallback((notes: { freq: number; dur: number; delay: number; type?: OscillatorType }[]) => {
+    if (isMuted) return;
+    
     notes.forEach(note => {
       setTimeout(() => {
         playTone(note.freq, note.dur, note.type || 'sine');
       }, note.delay * 1000);
     });
-  }, [playTone]);
+  }, [playTone, isMuted]);
 
   const playSound = useCallback((soundType: SoundType) => {
+    if (isMuted) return;
+    
     switch (soundType) {
       case 'wave':
         // Friendly wave sound - ascending cheerful notes
@@ -125,7 +148,7 @@ export function useRobotSounds() {
         ]);
         break;
     }
-  }, [playSequence]);
+  }, [playSequence, isMuted]);
 
-  return { playSound };
+  return { playSound, isMuted, toggleMute };
 }

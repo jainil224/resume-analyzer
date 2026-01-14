@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Send, Bot, User, Loader2, Copy } from "lucide-react";
+import { X, Send, Bot, User, Loader2, Copy, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRobotSounds } from "@/hooks/useRobotSounds";
@@ -315,7 +315,7 @@ export function Robot3DChatbot() {
   const robotRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme } = useTheme();
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
-  const { playSound } = useRobotSounds();
+  const { playSound, isMuted, toggleMute } = useRobotSounds();
   const prevExpressionRef = useRef<RobotExpression>("idle");
 
   // Track mouse position for 3D effect
@@ -580,9 +580,20 @@ export function Robot3DChatbot() {
                     <p className="text-xs text-primary-foreground/70">Resume & Career Expert</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleClose} className="text-primary-foreground hover:bg-primary-foreground/20">
-                  <X className="w-5 h-5" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={toggleMute} 
+                    className="text-primary-foreground hover:bg-primary-foreground/20"
+                    title={isMuted ? "Unmute sounds" : "Mute sounds"}
+                  >
+                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={handleClose} className="text-primary-foreground hover:bg-primary-foreground/20">
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
 
               {/* Messages */}
