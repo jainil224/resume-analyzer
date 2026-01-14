@@ -64,8 +64,11 @@ export default function Dashboard() {
           className="grid md:grid-cols-3 gap-4 mb-12"
         >
           {features.map((feature) => (
-            <div key={feature.title} className="p-6 rounded-xl bg-card border border-border text-center">
-              <div className="inline-flex p-3 bg-accent/10 rounded-xl mb-3">
+            <div 
+              key={feature.title} 
+              className="group p-6 rounded-xl bg-card border border-border text-center relative overflow-hidden cursor-pointer transition-all duration-300 hover:border-accent/50 before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-gradient-to-r before:from-[#ff0000] before:to-[#00ffff] before:transform before:scale-x-0 before:origin-right before:transition-transform before:duration-400 before:ease-out hover:before:scale-x-100 hover:before:origin-left after:absolute after:top-0 after:left-0 after:w-full after:h-[2px] after:bg-gradient-to-r after:from-[#00ffff] after:to-[#ff0000] after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-400 after:ease-out hover:after:scale-x-100 hover:after:origin-right"
+            >
+              <div className="inline-flex p-3 bg-accent/10 rounded-xl mb-3 transition-transform duration-300 group-hover:scale-110">
                 <feature.icon className="w-6 h-6 text-accent" />
               </div>
               <h3 className="font-semibold mb-1">{feature.title}</h3>
