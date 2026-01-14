@@ -22,7 +22,7 @@ const buttonVariants = cva(
         accent:
           "bg-accent text-accent-foreground shadow-md hover:shadow-glow hover:scale-[1.02] active:scale-[0.98]",
         hero:
-          "bg-accent text-accent-foreground shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] font-bold",
+          "bg-accent text-accent-foreground shadow-lg font-bold relative overflow-hidden group hover:shadow-[0_0_30px_hsl(var(--accent)/0.5)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700 [&_svg:last-child]:transition-transform [&_svg:last-child]:duration-300 hover:[&_svg:last-child]:translate-x-1",
         success:
           "bg-success text-success-foreground shadow-md hover:bg-success/90",
       },
