@@ -211,10 +211,13 @@ export default function Analyze() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto"
             >
-              <Card variant="gradient-underline" className="hover:shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-300" />Your Resume
+              <Card variant="gradient-underline" className="hover:shadow-lg transition-shadow duration-300">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-accent/10 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                      <FileText className="w-5 h-5 text-accent" />
+                    </div>
+                    Your Resume
                   </CardTitle>
                   <CardDescription>Upload a file or paste your resume text</CardDescription>
                 </CardHeader>
@@ -225,43 +228,47 @@ export default function Analyze() {
                       <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">Or paste text</span>
+                      <span className="bg-card px-3 text-muted-foreground font-medium">Or paste text</span>
                     </div>
                   </div>
                   <Textarea
                     placeholder="Paste your resume content here..."
                     value={resumeText}
                     onChange={(e) => setResumeText(e.target.value)}
-                    className="min-h-[120px] resize-none"
+                    className="min-h-[120px] resize-none focus:ring-2 focus:ring-accent/20"
                   />
                 </CardContent>
               </Card>
 
-              <Card variant="gradient-underline" className="hover:shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-300" />Job Description
+              <Card variant="gradient-underline" className="hover:shadow-lg transition-shadow duration-300">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-accent/10 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                      <Target className="w-5 h-5 text-accent" />
+                    </div>
+                    Job Description
                   </CardTitle>
                   <CardDescription>Paste the job description you're applying for</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="jobTitle">Job Title (optional)</Label>
+                    <Label htmlFor="jobTitle" className="text-sm font-medium">Job Title (optional)</Label>
                     <Input
                       id="jobTitle"
                       placeholder="e.g., Senior Frontend Developer"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
+                      className="focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="jobDesc">Job Description</Label>
+                    <Label htmlFor="jobDesc" className="text-sm font-medium">Job Description</Label>
                     <Textarea
                       id="jobDesc"
                       placeholder="Paste the job description here..."
                       value={jobDescription}
                       onChange={(e) => setJobDescription(e.target.value)}
-                      className="min-h-[180px] resize-none"
+                      className="min-h-[180px] resize-none focus:ring-2 focus:ring-accent/20"
                     />
                   </div>
                 </CardContent>
@@ -272,7 +279,7 @@ export default function Analyze() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-center mt-8"
+              className="text-center mt-10"
             >
               <Button
                 variant="hero"
@@ -284,10 +291,10 @@ export default function Analyze() {
                 Analyze with AI
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <p className="text-xs text-muted-foreground mt-3">
-                {user ? "Analysis will be saved to your history" : "Free analysis • No account required"}
+              <p className="text-sm text-muted-foreground mt-4">
+                {user ? "✓ Analysis will be saved to your history" : "✓ Free analysis • No account required"}
               </p>
-              <p className="text-xs text-muted-foreground mt-6 pt-4 border-t border-border/50">
+              <p className="text-xs text-muted-foreground mt-8 pt-4 border-t border-border/50">
                 Made with ❤️ by Jainil Patel
               </p>
             </motion.div>
@@ -296,7 +303,7 @@ export default function Analyze() {
 
         {isAnalyzing && (
           <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Card variant="elevated" className="max-w-lg mx-auto">
+            <Card variant="elevated" className="max-w-lg mx-auto shadow-xl">
               <LoadingAnalysis currentStep={analysisStep} />
             </Card>
           </motion.div>
@@ -304,8 +311,9 @@ export default function Analyze() {
 
         {analysisResults && !isAnalyzing && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto">
-            <div className="mb-6 text-center">
-              <Button variant="outline" onClick={handleReset}>
+            <div className="mb-8 text-center">
+              <Button variant="outline" onClick={handleReset} className="gap-2 hover:bg-secondary">
+                <ArrowRight className="w-4 h-4 rotate-180" />
                 Analyze Another Resume
               </Button>
             </div>

@@ -13,21 +13,22 @@ export function SkillTag({ skill, matched = true, className }: SkillTagProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.2 }}
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+        "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all cursor-default",
         matched
-          ? "bg-success/10 text-success border border-success/20"
-          : "bg-warning/10 text-warning border border-warning/20",
+          ? "bg-success/10 text-success border border-success/20 hover:bg-success/15 hover:border-success/30"
+          : "bg-warning/10 text-warning border border-warning/20 hover:bg-warning/15 hover:border-warning/30",
         className
       )}
     >
       {matched ? (
-        <Check className="w-3.5 h-3.5" />
+        <Check className="w-4 h-4" />
       ) : (
-        <X className="w-3.5 h-3.5" />
+        <X className="w-4 h-4" />
       )}
-      {skill}
+      <span>{skill}</span>
     </motion.div>
   );
 }

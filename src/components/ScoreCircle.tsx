@@ -8,12 +8,13 @@ interface ScoreCircleProps {
   label?: string;
   showPercentage?: boolean;
   className?: string;
+  variant?: "default" | "hero";
 }
 
 const sizeConfig = {
-  sm: { width: 80, strokeWidth: 6, fontSize: "text-lg" },
-  md: { width: 120, strokeWidth: 8, fontSize: "text-2xl" },
-  lg: { width: 180, strokeWidth: 10, fontSize: "text-4xl" },
+  sm: { width: 80, strokeWidth: 6, fontSize: "text-xl", labelSize: "text-xs" },
+  md: { width: 120, strokeWidth: 8, fontSize: "text-3xl", labelSize: "text-sm" },
+  lg: { width: 180, strokeWidth: 12, fontSize: "text-5xl", labelSize: "text-base" },
 };
 
 export function ScoreCircle({
@@ -23,6 +24,7 @@ export function ScoreCircle({
   label,
   showPercentage = true,
   className,
+  variant = "default",
 }: ScoreCircleProps) {
   const config = sizeConfig[size];
   const radius = (config.width - config.strokeWidth) / 2;
@@ -32,9 +34,17 @@ export function ScoreCircle({
 
   const getScoreColor = () => {
     if (percentage >= 80) return "stroke-success";
-    if (percentage >= 60) return "stroke-accent";
+    if (percentage >= 60) return "stroke-success";
     if (percentage >= 40) return "stroke-warning";
     return "stroke-destructive";
+  };
+
+  const getTextColor = () => {
+    if (variant === "hero") return "text-primary-foreground";
+    if (percentage >= 80) return "text-success";
+    if (percentage >= 60) return "text-success";
+    if (percentage >= 40) return "text-warning";
+    return "text-destructive";
   };
 
   return (
@@ -53,7 +63,7 @@ export function ScoreCircle({
             fill="none"
             stroke="currentColor"
             strokeWidth={config.strokeWidth}
-            className="text-secondary"
+            className={variant === "hero" ? "text-white/20" : "text-secondary"}
           />
           {/* Progress circle */}
           <motion.circle
@@ -63,7 +73,7 @@ export function ScoreCircle({
             fill="none"
             strokeWidth={config.strokeWidth}
             strokeLinecap="round"
-            className={getScoreColor()}
+            className={variant === "hero" ? "stroke-white" : getScoreColor()}
             initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset }}
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
@@ -74,7 +84,7 @@ export function ScoreCircle({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
-            className={cn("font-bold", config.fontSize)}
+            className={cn("font-bold", config.fontSize, variant === "hero" ? "text-primary-foreground" : getTextColor())}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
@@ -82,12 +92,24 @@ export function ScoreCircle({
             {score}
           </motion.span>
           {showPercentage && (
-            <span className="text-xs text-muted-foreground">/ {maxScore}</span>
+            <span className={cn(
+              config.labelSize,
+              "font-medium",
+              variant === "hero" ? "text-primary-foreground/60" : "text-muted-foreground"
+            )}>
+              / {maxScore}
+            </span>
           )}
         </div>
       </div>
       {label && (
-        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        <span className={cn(
+          config.labelSize,
+          "font-medium",
+          variant === "hero" ? "text-primary-foreground/70" : "text-muted-foreground"
+        )}>
+          {label}
+        </span>
       )}
     </div>
   );
