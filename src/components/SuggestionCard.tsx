@@ -16,10 +16,10 @@ export function SuggestionCard({ suggestion, index, className }: SuggestionCardP
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
-      <Card variant="accent" className={cn("group hover:shadow-lg transition-all duration-300", className)}>
+      <Card variant="gradient-underline" className={cn("hover:shadow-lg", className)}>
         <CardContent className="p-4">
           <div className="flex gap-4">
-            <div className="flex-shrink-0 p-2 bg-accent/10 rounded-lg group-hover:bg-accent/20 transition-colors">
+            <div className="flex-shrink-0 p-2 bg-accent/10 rounded-lg group-hover:bg-accent/20 transition-colors group-hover:scale-110 transition-transform duration-300">
               <Lightbulb className="w-5 h-5 text-accent" />
             </div>
             <div className="flex-1 min-w-0">

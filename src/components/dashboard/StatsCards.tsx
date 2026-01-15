@@ -19,7 +19,7 @@ function StatCard({ title, value, icon: Icon, trend, color, delay }: StatCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
     >
-      <Card className="relative overflow-hidden group hover:shadow-lg transition-all">
+      <Card variant="gradient-underline" className="hover:shadow-lg">
         <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity`} />
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
@@ -30,7 +30,7 @@ function StatCard({ title, value, icon: Icon, trend, color, delay }: StatCardPro
                 <p className="text-xs text-success mt-1">{trend}</p>
               )}
             </div>
-            <div className={`p-3 rounded-xl bg-gradient-to-br ${color}`}>
+            <div className={`p-3 rounded-xl bg-gradient-to-br ${color} transition-transform duration-300 group-hover:scale-110`}>
               <Icon className="w-5 h-5 text-white" />
             </div>
           </div>
