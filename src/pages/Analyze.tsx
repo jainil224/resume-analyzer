@@ -211,10 +211,10 @@ export default function Analyze() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto"
             >
-              <Card variant="default">
+              <Card variant="gradient-underline" className="hover:shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-accent" />Your Resume
+                    <FileText className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-300" />Your Resume
                   </CardTitle>
                   <CardDescription>Upload a file or paste your resume text</CardDescription>
                 </CardHeader>
@@ -237,10 +237,10 @@ export default function Analyze() {
                 </CardContent>
               </Card>
 
-              <Card variant="default">
+              <Card variant="gradient-underline" className="hover:shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5 text-accent" />Job Description
+                    <Target className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-300" />Job Description
                   </CardTitle>
                   <CardDescription>Paste the job description you're applying for</CardDescription>
                 </CardHeader>
