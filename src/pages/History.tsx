@@ -173,8 +173,8 @@ export default function History() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card
-                    variant={selectedIds.includes(analysis.id) ? "accent" : "default"}
-                    className="hover:shadow-lg transition-shadow cursor-pointer"
+                    variant={selectedIds.includes(analysis.id) ? "accent" : "gradient-underline"}
+                    className="hover:shadow-lg"
                     onClick={() => toggleSelect(analysis.id)}
                   >
                     <CardContent className="p-4">

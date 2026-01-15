@@ -446,31 +446,31 @@ export default function Candidates() {
         transition={{ delay: 0.1 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        <Card className="bg-card-gradient border-border/50">
+        <Card variant="gradient-underline" className="bg-card-gradient border-border/50 hover:shadow-lg">
           <CardContent className="p-6 text-center">
-            <p className="text-3xl font-bold text-primary">{candidates.length}</p>
+            <p className="text-3xl font-bold text-primary group-hover:scale-105 transition-transform duration-300">{candidates.length}</p>
             <p className="text-sm text-muted-foreground">Total Candidates</p>
           </CardContent>
         </Card>
-        <Card className="bg-card-gradient border-border/50">
+        <Card variant="gradient-underline" className="bg-card-gradient border-border/50 hover:shadow-lg">
           <CardContent className="p-6 text-center">
-            <p className="text-3xl font-bold text-foreground">
+            <p className="text-3xl font-bold text-foreground group-hover:scale-105 transition-transform duration-300">
               {candidates.filter(c => c.status === "selected").length}
             </p>
             <p className="text-sm text-muted-foreground">Selected</p>
           </CardContent>
         </Card>
-        <Card className="bg-card-gradient border-border/50">
+        <Card variant="gradient-underline" className="bg-card-gradient border-border/50 hover:shadow-lg">
           <CardContent className="p-6 text-center">
-            <p className="text-3xl font-bold text-foreground">
+            <p className="text-3xl font-bold text-foreground group-hover:scale-105 transition-transform duration-300">
               {candidates.filter(c => c.status === "pending").length}
             </p>
             <p className="text-sm text-muted-foreground">Pending Review</p>
           </CardContent>
         </Card>
-        <Card className="bg-card-gradient border-border/50">
+        <Card variant="gradient-underline" className="bg-card-gradient border-border/50 hover:shadow-lg">
           <CardContent className="p-6 text-center">
-            <p className="text-3xl font-bold text-success">
+            <p className="text-3xl font-bold text-success group-hover:scale-105 transition-transform duration-300">
               {candidates.length > 0 
                 ? Math.round(candidates.reduce((acc, c) => acc + (c.latestScore || 0), 0) / candidates.length)
                 : 0}%
