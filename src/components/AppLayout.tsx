@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ShareButtons } from "@/components/ShareButtons";
 import { Brain, Zap } from "lucide-react";
 import { Robot3DChatbot } from "@/components/Robot3DChatbot";
 
@@ -31,7 +32,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </Badge>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <ShareButtons showExport={false} />
                 <ThemeToggle />
               </div>
             </div>

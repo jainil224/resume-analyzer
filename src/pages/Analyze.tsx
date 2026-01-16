@@ -317,7 +317,7 @@ export default function Analyze() {
                 Analyze Another Resume
               </Button>
             </div>
-            <AnalysisResults data={analysisResults} />
+            <AnalysisResults data={analysisResults} jobTitle={jobTitle} />
           </motion.div>
         )}
         </AnimatePresence>

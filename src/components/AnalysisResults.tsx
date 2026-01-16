@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScoreCircle } from "./ScoreCircle";
 import { SkillTag } from "./SkillTag";
 import { SuggestionCard } from "./SuggestionCard";
+import { ShareButtons } from "./ShareButtons";
+import { generateAnalysisPDF } from "@/utils/pdfExport";
 import { 
   Target, 
   Briefcase, 
@@ -15,6 +17,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface AnalysisData {
   overall_score: number;
@@ -31,6 +34,7 @@ interface AnalysisData {
 
 interface AnalysisResultsProps {
   data: AnalysisData;
+  jobTitle?: string;
 }
 
 const containerVariants = {
@@ -48,7 +52,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export function AnalysisResults({ data }: AnalysisResultsProps) {
+export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
   const getScoreMessage = () => {
     if (data.overall_score >= 80) return { title: "Excellent Match!", color: "text-success" };
     if (data.overall_score >= 60) return { title: "Good Potential", color: "text-success" };
@@ -58,6 +62,16 @@ export function AnalysisResults({ data }: AnalysisResultsProps) {
 
   const scoreMessage = getScoreMessage();
 
+  const handleExportPDF = () => {
+    try {
+      generateAnalysisPDF(data, jobTitle);
+      toast.success("PDF report downloaded successfully!");
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast.error("Failed to generate PDF report");
+    }
+  };
+
   return (
     <motion.div
       variants={containerVariants}
@@ -65,6 +79,14 @@ export function AnalysisResults({ data }: AnalysisResultsProps) {
       animate="visible"
       className="space-y-6"
     >
+      {/* Export & Share Actions */}
+      <motion.div variants={itemVariants} className="flex justify-end">
+        <ShareButtons 
+          score={data.overall_score} 
+          onExportPDF={handleExportPDF}
+          showExport={true}
+        />
+      </motion.div>
       {/* Main Score Hero Section */}
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-0 shadow-xl">
