@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Analyze from "./pages/Analyze";
+import DownloadHistoryPage from "./pages/DownloadHistoryPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/analyze" element={<Analyze />} />
+        <Route path="/history" element={<DownloadHistoryPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
