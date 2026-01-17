@@ -4,8 +4,9 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ShareButtons } from "@/components/ShareButtons";
-import { Brain, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Robot3DChatbot } from "@/components/Robot3DChatbot";
+import logoImage from "@/assets/logo.png";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -23,8 +24,12 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex items-center gap-3">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-accent-gradient rounded-lg">
-                    <Brain className="w-5 h-5 text-accent-foreground" />
+                  <div className="w-8 h-8 flex-shrink-0">
+                    <img 
+                      src={logoImage} 
+                      alt="RA Logo" 
+                      className="w-full h-full object-contain dark:invert transition-all duration-300"
+                    />
                   </div>
                   <span className="font-bold text-lg hidden sm:inline">Resume Analyzer</span>
                   <Badge variant="ai" className="hidden md:flex">
