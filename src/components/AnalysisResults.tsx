@@ -5,9 +5,7 @@ import { ScoreCircle } from "./ScoreCircle";
 import { SkillTag } from "./SkillTag";
 import { SuggestionCard } from "./SuggestionCard";
 import { ShareButtons } from "./ShareButtons";
-import { DownloadHistory } from "./DownloadHistory";
 import { generateAnalysisPDF } from "@/utils/pdfExport";
-import { useState } from "react";
 import { 
   Target, 
   Briefcase, 
@@ -55,8 +53,6 @@ const itemVariants = {
 };
 
 export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
-  const [historyKey, setHistoryKey] = useState(0);
-  
   const getScoreMessage = () => {
     if (data.overall_score >= 80) return { title: "Excellent Match!", color: "text-success" };
     if (data.overall_score >= 60) return { title: "Good Potential", color: "text-success" };
@@ -70,8 +66,6 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
     try {
       generateAnalysisPDF(data, jobTitle);
       toast.success("PDF report downloaded successfully!");
-      // Refresh history component
-      setHistoryKey(prev => prev + 1);
     } catch (error) {
       console.error("PDF export error:", error);
       toast.error("Failed to generate PDF report");
@@ -311,10 +305,6 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
         </Card>
       </motion.div>
 
-      {/* Download History */}
-      <motion.div variants={itemVariants}>
-        <DownloadHistory key={historyKey} />
-      </motion.div>
     </motion.div>
   );
 }
