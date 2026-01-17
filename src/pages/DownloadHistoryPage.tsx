@@ -7,6 +7,7 @@ import {
   getDownloadHistory, 
   clearDownloadHistory, 
   deleteDownloadHistoryItem,
+  regeneratePDF,
   DownloadHistoryItem 
 } from "@/utils/pdfExport";
 import { 
@@ -16,7 +17,8 @@ import {
   Download, 
   AlertCircle,
   History,
-  FileDown
+  FileDown,
+  RefreshCw
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -66,6 +68,21 @@ export default function DownloadHistoryPage() {
     toast.success("Item removed from history");
   };
 
+  const handleRedownload = (item: DownloadHistoryItem) => {
+    try {
+      if (!item.analysisData) {
+        toast.error("Analysis data not available for this report. Only newer downloads support re-downloading.");
+        return;
+      }
+      regeneratePDF(item);
+      setHistory(getDownloadHistory()); // Refresh to show the new download
+      toast.success("PDF report re-downloaded successfully!");
+    } catch (error) {
+      console.error("Re-download error:", error);
+      toast.error("Failed to re-download PDF report");
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 70) return "text-green-500";
     if (score >= 50) return "text-yellow-500";
@@ -96,7 +113,7 @@ export default function DownloadHistoryPage() {
               Download History
             </h1>
             <p className="text-muted-foreground mt-1">
-              Track all your previously generated PDF reports
+              Track and re-download your PDF reports
             </p>
           </div>
         </div>
@@ -156,6 +173,13 @@ export default function DownloadHistoryPage() {
                     {history.filter(item => item.score >= 70).length}
                   </div>
                   <div className="text-sm text-muted-foreground">High Scores (70%+)</div>
+                </div>
+                <div className="h-12 w-px bg-border" />
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-accent">
+                    {history.filter(item => item.analysisData).length}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Re-downloadable</div>
                 </div>
               </div>
             </CardContent>
@@ -223,6 +247,12 @@ export default function DownloadHistoryPage() {
                               {item.score}%
                             </span>
                           </Badge>
+                          {item.analysisData && (
+                            <Badge variant="outline" className="shrink-0 text-xs">
+                              <RefreshCw className="w-3 h-3 mr-1" />
+                              Re-downloadable
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex items-center gap-3 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1.5">
@@ -235,14 +265,27 @@ export default function DownloadHistoryPage() {
                         </p>
                       </div>
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteItem(item.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {item.analysisData && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => handleRedownload(item)}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Re-download
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDeleteItem(item.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </motion.div>
                   ))}
                 </AnimatePresence>

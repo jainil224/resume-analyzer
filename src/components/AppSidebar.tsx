@@ -8,9 +8,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import logoImage from "@/assets/logo.png";
 
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -28,6 +30,32 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+      {/* Logo Section */}
+      <SidebarHeader className="p-4 border-b border-sidebar-border">
+        <div 
+          className="flex items-center gap-3 cursor-pointer" 
+          onClick={() => navigate("/")}
+        >
+          <div className="relative w-10 h-10 flex-shrink-0">
+            <img 
+              src={logoImage} 
+              alt="RA Logo" 
+              className="w-full h-full object-contain dark:invert transition-all duration-300"
+            />
+          </div>
+          {!collapsed && (
+            <div className="flex flex-col">
+              <span className="font-bold text-lg text-foreground">
+                Resume Analyzer
+              </span>
+              <span className="text-xs text-muted-foreground">
+                AI-Powered Analysis
+              </span>
+            </div>
+          )}
+        </div>
+      </SidebarHeader>
+
       <SidebarContent className="pt-4">
         <SidebarGroup>
           <SidebarGroupContent>

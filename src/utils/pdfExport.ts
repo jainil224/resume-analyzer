@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 
-interface AnalysisData {
+export interface AnalysisData {
   overall_score: number;
   skills_match: number;
   experience_score: number;
@@ -254,8 +254,8 @@ export const generateAnalysisPDF = (data: AnalysisData, jobTitle?: string) => {
   const fileName = jobTitle ? `resume-analysis-${jobTitle.toLowerCase().replace(/\s+/g, '-')}.pdf` : 'resume-analysis-report.pdf';
   pdf.save(fileName);
   
-  // Save to download history
-  saveToDownloadHistory(jobTitle, data.overall_score, fileName);
+  // Save to download history with full analysis data
+  saveToDownloadHistory(jobTitle, data.overall_score, fileName, data);
   
   return fileName;
 };
@@ -267,11 +267,12 @@ export interface DownloadHistoryItem {
   jobTitle: string;
   score: number;
   downloadedAt: string;
+  analysisData?: AnalysisData; // Store full analysis data for re-download
 }
 
 const DOWNLOAD_HISTORY_KEY = 'resume_analyzer_download_history';
 
-export const saveToDownloadHistory = (jobTitle: string | undefined, score: number, fileName: string) => {
+export const saveToDownloadHistory = (jobTitle: string | undefined, score: number, fileName: string, analysisData?: AnalysisData) => {
   const history = getDownloadHistory();
   const newItem: DownloadHistoryItem = {
     id: crypto.randomUUID(),
@@ -279,6 +280,7 @@ export const saveToDownloadHistory = (jobTitle: string | undefined, score: numbe
     jobTitle: jobTitle || 'General Analysis',
     score,
     downloadedAt: new Date().toISOString(),
+    analysisData, // Store the full analysis data
   };
   
   // Keep only last 20 downloads
@@ -303,4 +305,12 @@ export const deleteDownloadHistoryItem = (id: string) => {
   const history = getDownloadHistory();
   const updatedHistory = history.filter(item => item.id !== id);
   localStorage.setItem(DOWNLOAD_HISTORY_KEY, JSON.stringify(updatedHistory));
+};
+
+// Re-generate PDF from stored analysis data
+export const regeneratePDF = (historyItem: DownloadHistoryItem) => {
+  if (!historyItem.analysisData) {
+    throw new Error('No analysis data available for this download');
+  }
+  return generateAnalysisPDF(historyItem.analysisData, historyItem.jobTitle);
 };
