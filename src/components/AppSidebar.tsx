@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, History } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   Sidebar,
   SidebarContent,
@@ -36,13 +37,22 @@ export function AppSidebar() {
           className="flex items-center gap-3 cursor-pointer" 
           onClick={() => navigate("/")}
         >
-          <div className="relative w-10 h-10 flex-shrink-0">
-            <img 
+          <motion.div 
+            className="relative w-10 h-10 flex-shrink-0"
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <motion.img 
               src={logoImage} 
               alt="RA Logo" 
               className="w-full h-full object-contain dark:invert transition-all duration-300"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             />
-          </div>
+          </motion.div>
           {!collapsed && (
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground">
