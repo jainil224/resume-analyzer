@@ -14,7 +14,7 @@ export function ThemeToggle() {
         transition-all duration-500 cursor-pointer hover:scale-105 active:scale-95
         ${isDark 
           ? "bg-slate-800 border border-slate-700" 
-          : "bg-orange-100 border border-orange-200"
+          : "bg-secondary border border-border"
         }
       `}
       aria-label="Toggle theme"
@@ -26,7 +26,7 @@ export function ThemeToggle() {
           relative flex items-center justify-center w-10 h-10 rounded-full
           ${isDark 
             ? "bg-slate-700 order-last" 
-            : "bg-orange-500 order-first"
+            : "bg-primary order-first"
           }
         `}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -77,7 +77,7 @@ export function ThemeToggle() {
               transition={{ duration: 0.3 }}
               className="relative"
             >
-              <Sun className="w-5 h-5 text-white" />
+              <Sun className="w-5 h-5 text-primary-foreground" />
               {/* Bubble decorations */}
               <motion.div
                 className="absolute -top-0.5 -right-1"
@@ -85,7 +85,7 @@ export function ThemeToggle() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
               >
-                <div className="w-2 h-2 bg-white/60 rounded-full" />
+                <div className="w-2 h-2 bg-primary-foreground/60 rounded-full" />
               </motion.div>
               <motion.div
                 className="absolute -bottom-1 -right-2"
@@ -93,7 +93,7 @@ export function ThemeToggle() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 0.3 }}
               >
-                <div className="w-1 h-1 bg-white/40 rounded-full" />
+                <div className="w-1 h-1 bg-primary-foreground/40 rounded-full" />
               </motion.div>
             </motion.div>
           )}
@@ -105,7 +105,7 @@ export function ThemeToggle() {
         layout
         className={`
           text-sm font-semibold tracking-wide whitespace-nowrap px-2
-          ${isDark ? "text-white order-first" : "text-orange-700 order-last"}
+          ${isDark ? "text-white order-first" : "text-foreground order-last"}
         `}
       >
         {isDark ? "Dark" : "Light"}
