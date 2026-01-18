@@ -311,7 +311,7 @@ export function Robot3DChatbot() {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const [expression, setExpression] = useState<RobotExpression>("idle");
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const robotRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme } = useTheme();
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
@@ -338,9 +338,14 @@ export function Robot3DChatbot() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  // Auto-scroll to latest message
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      // Find the viewport element inside ScrollArea
+      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight;
+      }
     }
   }, [messages]);
 
@@ -597,8 +602,8 @@ export function Robot3DChatbot() {
               </div>
 
               {/* Messages */}
-              <ScrollArea className="h-[350px] p-4">
-                <div ref={scrollRef} className="space-y-3">
+              <ScrollArea className="h-[350px] p-4" ref={scrollRef}>
+                <div className="space-y-3">
                   {messages.map((m, i) => (
                     <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                       <div className="flex gap-2 max-w-[85%] group">

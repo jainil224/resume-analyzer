@@ -14,7 +14,7 @@ export function ThemeToggle() {
         transition-all duration-500 cursor-pointer hover:scale-105 active:scale-95
         ${isDark 
           ? "bg-slate-800 border border-slate-700" 
-          : "bg-sky-100 border border-sky-200"
+          : "bg-orange-100 border border-orange-200"
         }
       `}
       aria-label="Toggle theme"
@@ -26,7 +26,7 @@ export function ThemeToggle() {
           relative flex items-center justify-center w-10 h-10 rounded-full
           ${isDark 
             ? "bg-slate-700 order-last" 
-            : "bg-sky-400 order-first"
+            : "bg-orange-500 order-first"
           }
         `}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -105,7 +105,7 @@ export function ThemeToggle() {
         layout
         className={`
           text-sm font-semibold tracking-wide whitespace-nowrap px-2
-          ${isDark ? "text-white order-first" : "text-slate-700 order-last"}
+          ${isDark ? "text-white order-first" : "text-orange-700 order-last"}
         `}
       >
         {isDark ? "Dark" : "Light"}
