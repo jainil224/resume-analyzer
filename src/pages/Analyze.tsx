@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { FileUpload } from "@/components/FileUpload";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { LoadingAnalysis } from "@/components/LoadingAnalysis";
 import { useAuth } from "@/hooks/useAuth";
+import { useAnalyzing } from "@/contexts/AnalyzingContext";
 import { supabase } from "@/integrations/supabase/client";
 import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
 import { Sparkles, ArrowRight, FileText, Target } from "lucide-react";
@@ -34,10 +35,16 @@ export default function Analyze() {
   const [resumeText, setResumeText] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isLocalAnalyzing, setIsLocalAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [analysisResults, setAnalysisResults] = useState<AnalysisData | null>(null);
   const { user } = useAuth();
+  const { setIsAnalyzing } = useAnalyzing();
+
+  // Sync local analyzing state with global context
+  useEffect(() => {
+    setIsAnalyzing(isLocalAnalyzing);
+  }, [isLocalAnalyzing, setIsAnalyzing]);
 
   const handleAnalyze = async () => {
     if (!resumeFile && !resumeText.trim()) {
@@ -49,7 +56,7 @@ export default function Analyze() {
       return;
     }
 
-    setIsAnalyzing(true);
+    setIsLocalAnalyzing(true);
     setAnalysisStep(0);
 
     try {
@@ -165,7 +172,7 @@ export default function Analyze() {
       console.error("Analysis error:", error);
       toast.error(error instanceof Error ? error.message : "Analysis failed");
     } finally {
-      setIsAnalyzing(false);
+      setIsLocalAnalyzing(false);
     }
   };
 
@@ -181,7 +188,7 @@ export default function Analyze() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 relative">
         <AnimatePresence mode="wait">
-          {!analysisResults && !isAnalyzing && (
+          {!analysisResults && !isLocalAnalyzing && (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="text-center mb-12">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -301,7 +308,7 @@ export default function Analyze() {
           </motion.div>
         )}
 
-        {isAnalyzing && (
+        {isLocalAnalyzing && (
           <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Card variant="elevated" className="max-w-lg mx-auto shadow-xl">
               <LoadingAnalysis currentStep={analysisStep} />
@@ -309,7 +316,7 @@ export default function Analyze() {
           </motion.div>
         )}
 
-        {analysisResults && !isAnalyzing && (
+        {analysisResults && !isLocalAnalyzing && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto">
             <div className="mb-8 text-center">
               <Button variant="outline" onClick={handleReset} className="gap-2 hover:bg-secondary">
