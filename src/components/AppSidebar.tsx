@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, History } from "lucide-react";
-import { motion } from "framer-motion";
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +12,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import logoImage from "@/assets/logo.png";
+import { ThemeLogo } from "@/components/ThemeLogo";
+import { useAnalyzing } from "@/contexts/AnalyzingContext";
 
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -26,6 +26,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { isAnalyzing } = useAnalyzing();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -37,22 +38,7 @@ export function AppSidebar() {
           className="flex items-center gap-3 cursor-pointer" 
           onClick={() => navigate("/")}
         >
-          <motion.div 
-            className="relative w-10 h-10 flex-shrink-0"
-            initial={{ scale: 1 }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <motion.img 
-              src={logoImage} 
-              alt="RA Logo" 
-              className="w-full h-full object-contain dark:invert transition-all duration-300"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            />
-          </motion.div>
+          <ThemeLogo size="md" isProcessing={isAnalyzing} />
           {!collapsed && (
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground">
