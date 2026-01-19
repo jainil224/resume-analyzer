@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ThemeLogo } from "@/components/ThemeLogo";
-import { useAnalyzing } from "@/contexts/AnalyzingContext";
 
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -26,7 +25,6 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { isAnalyzing } = useAnalyzing();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -38,7 +36,7 @@ export function AppSidebar() {
           className="flex items-center gap-3 cursor-pointer" 
           onClick={() => navigate("/")}
         >
-          <ThemeLogo size="md" isProcessing={isAnalyzing} />
+          <ThemeLogo size="md" />
           {!collapsed && (
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground">
