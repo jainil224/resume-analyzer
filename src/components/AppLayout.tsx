@@ -7,15 +7,12 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { Zap } from "lucide-react";
 import { Robot3DChatbot } from "@/components/Robot3DChatbot";
 import { ThemeLogo } from "@/components/ThemeLogo";
-import { useAnalyzing } from "@/contexts/AnalyzingContext";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { isAnalyzing } = useAnalyzing();
-
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -26,7 +23,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex items-center gap-3">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2">
-                  <ThemeLogo size="sm" isProcessing={isAnalyzing} />
+                  <ThemeLogo size="sm" />
                   <span className="font-bold text-lg hidden sm:inline">Resume Analyzer</span>
                   <Badge variant="ai" className="hidden md:flex">
                     <Zap className="w-3 h-3 mr-1" />AI Powered
