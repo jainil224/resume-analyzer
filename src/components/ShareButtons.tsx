@@ -91,13 +91,13 @@ export function ShareButtons({ score, onExportPDF, showExport = true }: ShareBut
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 bg-gradient-to-r from-accent/10 to-primary/10 border-accent/20 hover:border-accent/40 hover:bg-accent/20">
               <Share2 className="w-4 h-4" />
               Share
             </Button>
           </motion.div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-48 bg-background/80 backdrop-blur-sm">
           <DropdownMenuItem onClick={handleTwitterShare} className="cursor-pointer gap-2">
             <Twitter className="w-4 h-4 text-[#1DA1F2]" />
             Share on Twitter
