@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { FileUpload } from "@/components/FileUpload";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { LoadingAnalysis } from "@/components/LoadingAnalysis";
-import { useAuth } from "@/hooks/useAuth";
 import { useAnalyzing } from "@/contexts/AnalyzingContext";
 import { supabase } from "@/integrations/supabase/client";
 import { saveLocalCandidate, LocalCandidate } from "@/hooks/useLocalCandidates";
@@ -38,7 +37,6 @@ export default function Analyze() {
   const [isLocalAnalyzing, setIsLocalAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [analysisResults, setAnalysisResults] = useState<AnalysisData | null>(null);
-  const { user } = useAuth();
   const { setIsAnalyzing } = useAnalyzing();
 
   // Sync local analyzing state with global context
@@ -46,135 +44,167 @@ export default function Analyze() {
     setIsAnalyzing(isLocalAnalyzing);
   }, [isLocalAnalyzing, setIsAnalyzing]);
 
-  const handleAnalyze = async () => {
-    if (!resumeFile && !resumeText.trim()) {
-      toast.error("Please upload your resume or paste its content");
-      return;
-    }
-    if (!jobDescription.trim()) {
-      toast.error("Please enter a job description");
-      return;
-    }
+    const handleAnalyze = async () => {
 
-    setIsLocalAnalyzing(true);
-    setAnalysisStep(0);
+      if (!resumeFile && !resumeText.trim()) {
 
-    try {
-      let textToAnalyze = resumeText.trim() || `Resume: ${resumeFile?.name}`;
+        toast.error("Please upload your resume or paste its content");
 
-      for (let i = 0; i < 4; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setAnalysisStep(i + 1);
+        return;
+
       }
 
-      const { data, error } = await supabase.functions.invoke("analyze-resume", {
-        body: { resumeText: textToAnalyze, jobDescription: jobDescription.trim() },
-      });
+      if (!jobDescription.trim()) {
 
-      if (error) throw new Error(error.message || "Analysis failed");
+        toast.error("Please enter a job description");
 
-      const results = data as AnalysisData;
-      setAnalysisResults(results);
+        return;
 
-      if (user) {
-        // Save to analyses table for history
-        await supabase.from("analyses").insert({
-          user_id: user.id,
-          resume_name: resumeFile?.name || "Pasted Resume",
-          job_title: jobTitle.trim() || null,
-          job_description: jobDescription.trim(),
-          overall_score: results.overall_score,
-          skills_match: results.skills_match,
-          experience_score: results.experience_score,
-          ats_score: results.ats_score,
-          formatting_score: results.formatting_score,
-          matched_skills: results.matched_skills,
-          missing_skills: results.missing_skills,
-          strengths: results.strengths,
-          weaknesses: results.weaknesses,
-          ai_suggestions: results.ai_suggestions,
+      }
+
+  
+
+      setIsLocalAnalyzing(true);
+
+      setAnalysisStep(0);
+
+  
+
+      try {
+
+        let textToAnalyze = resumeText.trim();
+
+        if (resumeFile) {
+
+          try {
+
+            textToAnalyze = await resumeFile.text();
+
+          } catch (readError) {
+
+            console.error("Error reading file:", readError);
+
+            toast.error("Could not read the resume file. Please check the file or paste the text directly.");
+
+            setIsLocalAnalyzing(false);
+
+            return;
+
+          }
+
+        }
+
+  
+
+        if (!textToAnalyze) {
+
+          toast.error("Resume content is empty.");
+
+          setIsLocalAnalyzing(false);
+
+          return;
+
+        }
+
+  
+
+        for (let i = 0; i < 4; i++) {
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          setAnalysisStep(i + 1);
+
+        }
+
+  
+
+        const { data, error } = await supabase.functions.invoke("analyze-resume", {
+
+          body: { resumeText: textToAnalyze, jobDescription: jobDescription.trim() },
+
         });
 
-        // Extract candidate name from resume text or use file name
-        const resumeName = resumeFile?.name?.replace(/\.[^/.]+$/, "") || "Unknown Candidate";
-        
-        // Create a new candidate entry
-        const { data: candidateData, error: candidateError } = await supabase
-          .from("candidates")
-          .insert({
-            user_id: user.id,
-            name: resumeName,
-            email: `${resumeName.toLowerCase().replace(/\s+/g, '.')}@pending.com`,
-            applied_role: jobTitle.trim() || "Not Specified",
-            status: "pending",
-          })
-          .select()
-          .single();
+  
 
-        if (!candidateError && candidateData) {
-          // Create candidate resume with analysis results
-          await supabase.from("candidate_resumes").insert({
-            candidate_id: candidateData.id,
-            user_id: user.id,
-            resume_name: resumeFile?.name || "Pasted Resume",
-            resume_text: textToAnalyze,
-            job_description: jobDescription.trim(),
-            overall_score: results.overall_score,
-            skills_match: results.skills_match,
-            experience_score: results.experience_score,
-            education_score: 0,
-            ats_score: results.ats_score,
-            formatting_score: results.formatting_score,
-            grammar_score: 0,
-            matched_skills: results.matched_skills,
-            missing_skills: results.missing_skills,
-            strengths: results.strengths,
-            weaknesses: results.weaknesses,
-            ai_suggestions: results.ai_suggestions,
-            analysis_status: "completed",
-            version: 1,
-          });
-          toast.success("Analysis saved! Candidate added to your candidates list.");
-        } else {
-          toast.success("Analysis saved to your history!");
-        }
-      } else {
+        if (error) throw new Error(error.message || "Analysis failed");
+
+  
+
+        const results = data as AnalysisData;
+
+        setAnalysisResults(results);
+
+  
+
         // Save to local storage for guests
+
         const resumeName = resumeFile?.name?.replace(/\.[^/.]+$/, "") || "Unknown Candidate";
+
         const localCandidate: LocalCandidate = {
+
           id: `local-${Date.now()}`,
+
           name: resumeName,
+
           email: `${resumeName.toLowerCase().replace(/\s+/g, '.')}@pending.com`,
+
           phone: null,
+
           applied_role: jobTitle.trim() || "Not Specified",
+
           status: "pending",
+
           created_at: new Date().toISOString(),
+
           updated_at: new Date().toISOString(),
+
           education: null,
+
           experience_years: 0,
+
           profile_picture_url: null,
+
           interview_date: null,
+
           interview_status: "not_scheduled",
+
           latestScore: results.overall_score,
+
           analysisStatus: "completed",
+
           matchedSkills: results.matched_skills,
+
           missingSkills: results.missing_skills,
+
           resumeText: textToAnalyze,
+
           jobDescription: jobDescription.trim(),
+
           strengths: results.strengths,
+
           weaknesses: results.weaknesses,
+
           aiSuggestions: results.ai_suggestions,
+
         };
+
         saveLocalCandidate(localCandidate);
+
         toast.success("Analysis complete! Candidate added to your local list.");
+
+      } catch (error) {
+
+        console.error("Analysis error:", error);
+
+        toast.error(error instanceof Error ? error.message : "Analysis failed");
+
+      } finally {
+
+        setIsLocalAnalyzing(false);
+
       }
-    } catch (error) {
-      console.error("Analysis error:", error);
-      toast.error(error instanceof Error ? error.message : "Analysis failed");
-    } finally {
-      setIsLocalAnalyzing(false);
-    }
-  };
+
+    };
 
   const handleReset = () => {
     setResumeFile(null);
@@ -299,7 +329,7 @@ export default function Analyze() {
                 <ArrowRight className="w-5 h-5" />
               </Button>
               <p className="text-sm text-muted-foreground mt-4">
-                {user ? "✓ Analysis will be saved to your history" : "✓ Free analysis • No account required"}
+                {"✓ Free analysis • No account required"}
               </p>
               <p className="text-xs text-muted-foreground mt-8 pt-4 border-t border-border/50">
                 Made with ❤️ by Jainil Patel

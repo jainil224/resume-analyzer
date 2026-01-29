@@ -7,22 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { 
   Users, 
   Plus,
   Mail,
   Eye,
-  Download,
-  LogIn,
-  CheckCircle,
-  Clock,
-  XCircle
+  LogIn
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { format } from "date-fns";
 import { CandidateFilters } from "@/components/candidates/CandidateFilters";
 import { DuplicateDetection } from "@/components/candidates/DuplicateDetection";
 import { QuickActions } from "@/components/candidates/QuickActions";
@@ -77,166 +69,23 @@ export default function Candidates() {
   const [experienceFilter, setExperienceFilter] = useState("all");
   const [skillFilter, setSkillFilter] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newCandidate, setNewCandidate] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    applied_role: "",
-    education: "",
-    experience_years: 0
-  });
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const isDemo = !user;
+  const isDemo = true;
   const { localCandidates, deleteCandidate: deleteLocalCandidate } = useLocalCandidates();
 
   useEffect(() => {
-    if (isDemo) {
-      // Combine local candidates with mock data for demo mode
-      const combined = [...localCandidates, ...(mockCandidates as Candidate[])];
-      setCandidates(combined);
-      setLoading(false);
-    } else {
-      fetchCandidates();
-    }
-  }, [user, localCandidates]);
-
-  const fetchCandidates = async () => {
-    const { data: candidatesData, error: candidatesError } = await supabase
-      .from("candidates")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (candidatesError) {
-      toast.error("Failed to load candidates");
-      setLoading(false);
-      return;
-    }
-
-    // Fetch latest resume scores for each candidate
-    const candidateIds = candidatesData.map(c => c.id);
-    const { data: resumesData } = await supabase
-      .from("candidate_resumes")
-      .select("candidate_id, overall_score, analysis_status, matched_skills, created_at")
-      .in("candidate_id", candidateIds)
-      .order("created_at", { ascending: false });
-
-    const latestData: Record<string, { score: number; status: string; skills: string[] }> = {};
-    resumesData?.forEach(resume => {
-      if (!latestData[resume.candidate_id]) {
-        latestData[resume.candidate_id] = {
-          score: resume.overall_score || 0,
-          status: resume.analysis_status || "pending",
-          skills: resume.matched_skills || []
-        };
-      }
-    });
-
-    const candidatesWithScores = candidatesData.map(c => ({
-      ...c,
-      status: c.status as CandidateStatus,
-      latestScore: latestData[c.id]?.score,
-      analysisStatus: latestData[c.id]?.status || "pending",
-      matchedSkills: latestData[c.id]?.skills || []
-    }));
-
-    setCandidates(candidatesWithScores);
+    // Combine local candidates with mock data for demo mode
+    const combined = [...localCandidates, ...(mockCandidates as Candidate[])];
+    setCandidates(combined);
     setLoading(false);
-  };
+  }, [localCandidates]);
 
-  const handleAddCandidate = async () => {
-    if (isDemo) {
-      toast.info("Login to add real candidates");
-      setIsAddDialogOpen(false);
-      return;
-    }
-
-    if (!newCandidate.name || !newCandidate.email || !newCandidate.applied_role) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    // Check for duplicates
-    const { data: existingEmail } = await supabase
-      .from("candidates")
-      .select("id")
-      .eq("email", newCandidate.email)
-      .maybeSingle();
-
-    if (existingEmail) {
-      toast.error("A candidate with this email already exists");
-      return;
-    }
-
-    if (newCandidate.phone) {
-      const { data: existingPhone } = await supabase
-        .from("candidates")
-        .select("id")
-        .eq("phone", newCandidate.phone)
-        .maybeSingle();
-
-      if (existingPhone) {
-        toast.error("A candidate with this phone number already exists");
-        return;
-      }
-    }
-
-    const { error } = await supabase.from("candidates").insert({
-      user_id: user!.id,
-      name: newCandidate.name,
-      email: newCandidate.email,
-      phone: newCandidate.phone || null,
-      applied_role: newCandidate.applied_role,
-      education: newCandidate.education || null,
-      experience_years: newCandidate.experience_years
-    });
-
-    if (error) {
-      toast.error("Failed to add candidate");
-      return;
-    }
-
-    toast.success("Candidate added successfully");
-    setIsAddDialogOpen(false);
-    setNewCandidate({ name: "", email: "", phone: "", applied_role: "", education: "", experience_years: 0 });
-    fetchCandidates();
-  };
-
-  const handleDeleteCandidate = async (id: string) => {
-    if (isDemo) {
-      toast.info("Login to delete candidates");
-      return;
-    }
-    const { error } = await supabase.from("candidates").delete().eq("id", id);
-    if (error) {
-      toast.error("Failed to delete candidate");
-      return;
-    }
-    toast.success("Candidate deleted");
-    fetchCandidates();
-  };
-
-  const handleStatusChange = async (id: string, newStatus: CandidateStatus) => {
-    if (isDemo) {
-      // Update local state for demo
-      setCandidates(prev => prev.map(c => 
-        c.id === id ? { ...c, status: newStatus } : c
-      ));
-      toast.success("Status updated (demo mode)");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("candidates")
-      .update({ status: newStatus })
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to update status");
-      return;
-    }
-    toast.success("Status updated");
-    fetchCandidates();
+  const handleStatusChange = (id: string, newStatus: CandidateStatus) => {
+    // Update local state for demo
+    setCandidates(prev => prev.map(c => 
+      c.id === id ? { ...c, status: newStatus } : c
+    ));
+    toast.success("Status updated (demo mode)");
   };
 
   const clearAllFilters = () => {
@@ -311,7 +160,6 @@ export default function Candidates() {
   return (
     <div className="bg-background p-6 space-y-6 relative min-h-screen">
         {/* Demo Banner */}
-      {isDemo && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -323,15 +171,10 @@ export default function Candidates() {
             </div>
             <div>
               <p className="font-medium text-primary">Demo Mode</p>
-              <p className="text-sm text-muted-foreground">Viewing sample data. Login to manage real candidates.</p>
+              <p className="text-sm text-muted-foreground">Viewing sample data. No login required.</p>
             </div>
           </div>
-          <Button onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
-            <LogIn className="w-4 h-4 mr-2" />
-            Login
-          </Button>
         </motion.div>
-      )}
 
       {/* Header */}
       <motion.div
@@ -351,91 +194,11 @@ export default function Candidates() {
 
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-accent-gradient hover:opacity-90">
+            <Button className="bg-accent-gradient hover:opacity-90" onClick={() => toast.info("This is a demo feature.")}>
               <Plus className="w-4 h-4 mr-2" />
               Import Candidates
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Add New Candidate</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              {/* Duplicate Detection */}
-              {(newCandidate.email || newCandidate.phone) && (
-                <DuplicateDetection 
-                  email={newCandidate.email}
-                  phone={newCandidate.phone}
-                />
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
-                  <Input
-                    id="name"
-                    value={newCandidate.name}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newCandidate.email}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="john@example.com"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={newCandidate.phone}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="+1 234 567 8900"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">Applied Role *</Label>
-                  <Input
-                    id="role"
-                    value={newCandidate.applied_role}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, applied_role: e.target.value }))}
-                    placeholder="Software Engineer"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="education">Education</Label>
-                  <Input
-                    id="education"
-                    value={newCandidate.education}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, education: e.target.value }))}
-                    placeholder="B.Tech in Computer Science"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="experience">Experience (Years)</Label>
-                  <Input
-                    id="experience"
-                    type="number"
-                    min="0"
-                    value={newCandidate.experience_years}
-                    onChange={(e) => setNewCandidate(prev => ({ ...prev, experience_years: parseInt(e.target.value) || 0 }))}
-                  />
-                </div>
-              </div>
-              <Button onClick={handleAddCandidate} className="w-full bg-accent-gradient">
-                Add Candidate
-              </Button>
-            </div>
-          </DialogContent>
         </Dialog>
       </motion.div>
 
@@ -603,17 +366,15 @@ export default function Candidates() {
                           candidateId={candidate.id}
                           currentStatus={candidate.status}
                           onStatusChange={(newStatus) => {
-                            if (isDemo && newStatus) {
+                            if (newStatus) {
                               setCandidates(prev => prev.map(c => 
                                 c.id === candidate.id ? { ...c, status: newStatus } : c
                               ));
-                            } else if (!isDemo) {
-                              fetchCandidates();
                             }
                           }}
                           onDelete={candidate.id.startsWith("local-") 
                             ? () => deleteLocalCandidate(candidate.id) 
-                            : (isDemo ? undefined : fetchCandidates)}
+                            : undefined}
                           isDemo={isDemo}
                         />
                       </td>

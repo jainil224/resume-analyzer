@@ -22,7 +22,6 @@ import {
   ArrowDownRight,
   Minus
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -48,16 +47,10 @@ export default function Compare() {
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"side-by-side" | "diff">("side-by-side");
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
     const ids = searchParams.get("ids")?.split(",") || [];
     if (ids.length !== 2) {
       toast.error("Please select exactly 2 analyses to compare");
@@ -66,7 +59,7 @@ export default function Compare() {
     }
 
     fetchAnalyses(ids);
-  }, [user, navigate, searchParams]);
+  }, [navigate, searchParams]);
 
   const fetchAnalyses = async (ids: string[]) => {
     const { data, error } = await supabase

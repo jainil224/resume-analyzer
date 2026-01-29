@@ -17,8 +17,6 @@ import {
   FileText, MessageSquare, History, Download, Send, Plus, Trash2, Eye, GitCompare,
   Sparkles, BookOpen, Award, FileCheck, GraduationCap, Share2, LogIn
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { CandidateResumeUpload } from "@/components/candidates/CandidateResumeUpload";

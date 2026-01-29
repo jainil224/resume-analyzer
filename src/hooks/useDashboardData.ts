@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 
 interface Analysis {
   id: string;
@@ -36,17 +35,10 @@ interface DashboardStats {
 export function useDashboardData() {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      setData(null);
-      setLoading(false);
-      return;
-    }
-
     fetchDashboardData();
-  }, [user]);
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -126,7 +118,7 @@ export function useDashboardData() {
 
       // Progress stats
       const progressStats = {
-        profileCompletion: user ? 85 : 0,
+        profileCompletion: 85,
         resumeStrength: averageAtsScore > 0 ? Math.min(averageAtsScore * 5, 100) : 0,
         skillsImprovement: totalResumes > 1 
           ? Math.max(0, allAnalyses[0]?.overall_score - allAnalyses[allAnalyses.length - 1]?.overall_score)

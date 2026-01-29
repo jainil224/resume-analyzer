@@ -16,7 +16,6 @@ import {
   FileText,
   Briefcase
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -42,16 +41,11 @@ export default function History() {
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
     fetchAnalyses();
-  }, [user, navigate]);
+  }, []);
 
   const fetchAnalyses = async () => {
     const { data, error } = await supabase

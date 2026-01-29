@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ATSDistributionChart } from "@/components/dashboard/ATSDistributionChart";
@@ -14,113 +13,14 @@ import { AIRecommendations } from "@/components/dashboard/AIRecommendations";
 import { UserProgressTracker } from "@/components/dashboard/UserProgressTracker";
 import { ExportCenter } from "@/components/dashboard/ExportCenter";
 import { SystemStatus } from "@/components/dashboard/SystemStatus";
-import TrueFocus from "@/components/TrueFocus";
-import { Sparkles, ArrowRight, FileText, Target, Shield, TrendingUp, Github, Linkedin } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { data, loading } = useDashboardData();
-
-  const features = [
-    { icon: Target, title: "Skill Matching", desc: "AI identifies matching & missing skills" },
-    { icon: Shield, title: "ATS Optimized", desc: "Beat applicant tracking systems" },
-    { icon: TrendingUp, title: "Smart Suggestions", desc: "Personalized improvement tips" },
-  ];
 
   // Get AI suggestions from most recent analysis
   const latestSuggestions = data?.recentAnalyses[0]?.ai_suggestions || [];
-
-  if (!user) {
-    // Non-authenticated view - show landing content
-    return (
-      <div className="container mx-auto px-4 py-8 md:py-12 min-h-[calc(100vh-120px)] flex flex-col">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            <TrueFocus 
-              sentence="Welcome to Resume Analyzer"
-              manualMode={false}
-              blurAmount={4}
-              borderColor="hsl(var(--primary))"
-              glowColor="hsl(var(--primary) / 0.5)"
-              animationDuration={0.5}
-              pauseBetweenAnimations={1.5}
-            />
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid md:grid-cols-3 gap-4 mb-12"
-        >
-          {features.map((feature) => (
-            <div 
-              key={feature.title} 
-              className="group p-6 rounded-xl bg-card border border-border text-center relative overflow-hidden cursor-pointer transition-all duration-300 hover:border-accent/50 before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-gradient-to-r before:from-[#ff0000] before:to-[#00ffff] before:transform before:scale-x-0 before:origin-right before:transition-transform before:duration-400 before:ease-out hover:before:scale-x-100 hover:before:origin-left after:absolute after:top-0 after:left-0 after:w-full after:h-[2px] after:bg-gradient-to-r after:from-[#00ffff] after:to-[#ff0000] after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-400 after:ease-out hover:after:scale-x-100 hover:after:origin-right"
-            >
-              <div className="inline-flex p-3 bg-accent/10 rounded-xl mb-3 transition-transform duration-300 group-hover:scale-110">
-                <feature.icon className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="font-semibold mb-1">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.desc}</p>
-            </div>
-          ))}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center"
-        >
-          <Button variant="hero" size="xl" onClick={() => navigate("/analyze")}>
-            <FileText className="w-5 h-5" />
-            Analyze Resume Now
-            <ArrowRight className="w-5 h-5" />
-          </Button>
-        </motion.div>
-
-        {/* Footer */}
-        <div className="mt-auto pt-8 text-center space-y-3 border-t border-border/50 pt-6">
-          <div className="flex items-center justify-center gap-4">
-            <motion.a 
-              href="https://github.com/jainil224" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              whileHover={{ scale: 1.2, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Github className="w-5 h-5" />
-            </motion.a>
-            <motion.a 
-              href="https://www.linkedin.com/in/jainil-patel-947b1a336/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              whileHover={{ scale: 1.2, rotate: -5 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Linkedin className="w-5 h-5" />
-            </motion.a>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            © 2025 | Developed by <span className="font-semibold text-foreground">Jainil Patel</span>
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -140,7 +40,7 @@ export default function Dashboard() {
       >
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's your resume analytics overview.</p>
+          <p className="text-muted-foreground">Here's your resume analytics overview.</p>
         </div>
         <Button variant="hero" onClick={() => navigate("/analyze")}>
           <Sparkles className="w-4 h-4" />

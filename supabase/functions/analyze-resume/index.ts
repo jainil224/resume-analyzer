@@ -110,12 +110,12 @@ Analyze this resume against the job description and provide the JSON analysis.`;
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "AI analysis failed" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+            const errorText = await response.text();
+            console.error("AI gateway error:", response.status, errorText);
+            return new Response(
+              JSON.stringify({ error: `AI analysis failed. Gateway status: ${response.status}. Message: ${errorText}` }),
+              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
     }
 
     const aiResponse = await response.json();
