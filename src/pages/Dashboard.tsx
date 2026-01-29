@@ -64,7 +64,7 @@ export default function Dashboard() {
                 >
                     {/* Hero Section */}
                     <motion.div variants={itemVariants} className="text-center space-y-8">
-                        <div className="flex justify-center scale-90 md:scale-100">
+                        <div className="flex justify-center px-4">
                             <TrueFocus
                                 sentence="Welcome to Resume Analyzer"
                                 manualMode={false}
@@ -117,10 +117,10 @@ export default function Dashboard() {
             <footer className="w-full py-16 mt-auto">
                 <div className="container mx-auto px-6 flex flex-col items-center gap-8">
                     <div className="flex items-center gap-10">
-                        <a href="#" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
+                        <a href="https://github.com/jainil224/resume-analyzer" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
                             <Github className="w-7 h-7" />
                         </a>
-                        <a href="#" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
+                        <a href="https://www.linkedin.com/in/jainil-patel-947b1a336/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
                             <Linkedin className="w-7 h-7" />
                         </a>
                     </div>

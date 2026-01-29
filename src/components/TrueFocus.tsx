@@ -52,12 +52,38 @@ const TrueFocus = ({
     const activeRect = wordRefs.current[currentIndex]!.getBoundingClientRect();
 
     setFocusRect({
-      x: activeRect.left - parentRect.left,
-      y: activeRect.top - parentRect.top,
-      width: activeRect.width,
-      height: activeRect.height
+      x: activeRect.left - parentRect.left - 4, // Add padding
+      y: activeRect.top - parentRect.top - 2,
+      width: activeRect.width + 8,
+      height: activeRect.height + 4
     });
   }, [currentIndex, words.length]);
+
+  // Handle resize to update positions
+  useEffect(() => {
+    const handleResize = () => {
+      // Trigger update by forcing re-render or just relying on currentIndex update cycle?
+      // Better to manually recalculate if current index exists.
+      if (currentIndex !== null && wordRefs.current[currentIndex] && containerRef.current) {
+        const parentRect = containerRef.current.getBoundingClientRect();
+        const activeRect = wordRefs.current[currentIndex]!.getBoundingClientRect();
+        setFocusRect({
+          x: activeRect.left - parentRect.left - 4,
+          y: activeRect.top - parentRect.top - 2,
+          width: activeRect.width + 8,
+          height: activeRect.height + 4
+        });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [currentIndex]);
+
+  // Mobile optimization: Reduce blur on small screens
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const effectiveBlurAmount = isMobile ? Math.min(blurAmount, 3) : blurAmount;
+
 
   const handleMouseEnter = (index: number) => {
     if (manualMode) {
@@ -85,10 +111,10 @@ const TrueFocus = ({
               filter: manualMode
                 ? isActive
                   ? `blur(0px)`
-                  : `blur(${blurAmount}px)`
+                  : `blur(${effectiveBlurAmount}px)`
                 : isActive
                   ? `blur(0px)`
-                  : `blur(${blurAmount}px)`,
+                  : `blur(${effectiveBlurAmount}px)`,
               '--border-color': borderColor,
               '--glow-color': glowColor,
               transition: `filter ${animationDuration}s ease`
