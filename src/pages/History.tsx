@@ -14,11 +14,13 @@ import {
   Calendar,
   FileText,
   Briefcase,
-  RefreshCw
+  RefreshCw,
+  Download
 } from "lucide-react";
-import { useAnalysisHistory } from "@/hooks/useAnalysisHistory";
+import { useAnalysisHistory, AnalysisRecord } from "@/hooks/useAnalysisHistory";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { generateAnalysisPDF } from "@/utils/pdfExport";
 
 export default function History() {
   const { history, loading, error, refetch, deleteAnalysis } = useAnalysisHistory();
@@ -31,6 +33,16 @@ export default function History() {
       toast.success("Analysis deleted");
     } catch (err) {
       toast.error("Failed to delete analysis");
+    }
+  };
+
+  const handleDownload = (analysis: AnalysisRecord) => {
+    try {
+      generateAnalysisPDF(analysis, analysis.job_title || "Job");
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to generate PDF");
     }
   };
 
@@ -166,12 +178,24 @@ export default function History() {
                         </div>
                         <div className="hidden md:flex gap-2">
                           <Badge variant="outline">
-                            Skills: {analysis.skills_match}/40
+                            Skills: {analysis.skills_match}%
                           </Badge>
                           <Badge variant="outline">
-                            ATS: {analysis.ats_score}/20
+                            ATS: {analysis.ats_score}%
                           </Badge>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(analysis);
+                          }}
+                          className="text-muted-foreground hover:text-primary"
+                          title="Download PDF"
+                        >
+                          <Download className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
