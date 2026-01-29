@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ThemeLogo } from "@/components/ThemeLogo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -23,10 +24,18 @@ const menuItems = [
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
+  const isMobile = useIsMobile();
   const collapsed = state === "collapsed";
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleNavigation = (url: string) => {
+    navigate(url);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -34,7 +43,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <div
           className="flex items-center gap-3 cursor-pointer"
-          onClick={() => navigate("/")}
+          onClick={() => handleNavigation("/")}
         >
           <ThemeLogo size="md" />
           {!collapsed && (
@@ -57,7 +66,7 @@ export function AppSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
+                    onClick={() => handleNavigation(item.url)}
                     tooltip={item.title}
                     className={cn(
                       "transition-all duration-200",

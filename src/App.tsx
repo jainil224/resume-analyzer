@@ -10,6 +10,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { AppLoadingSkeleton } from "@/components/AppLoadingSkeleton";
 import Dashboard from "./pages/Dashboard";
 import Analyze from "./pages/Analyze";
+import History from "./pages/History"; // Correct import for Analysis History
 import DownloadHistoryPage from "./pages/DownloadHistoryPage";
 import NotFound from "./pages/NotFound";
 
@@ -33,7 +34,8 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/analyze" element={<Analyze />} />
-        <Route path="/history" element={<DownloadHistoryPage />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/downloads" element={<DownloadHistoryPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>

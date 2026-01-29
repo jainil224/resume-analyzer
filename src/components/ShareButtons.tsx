@@ -32,8 +32,11 @@ export function ShareButtons({ score, onExportPDF, showExport = true }: ShareBut
   const handleInstagramShare = (e: React.MouseEvent) => {
     e.preventDefault();
     // Instagram doesn't have a direct web share URL like others.
-    // Best practice is usually to copy the link.
-    handleCopyLink("Link copied! Ready to paste on Instagram.");
+    // Copy link and open Instagram
+    handleCopyLink("Link copied! Ready to paste on Instagram story/post.");
+    setTimeout(() => {
+      window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
+    }, 1000);
   };
 
   const handleCopyLink = async (message: string = "Link copied to clipboard!") => {
