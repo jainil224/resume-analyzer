@@ -32,8 +32,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       {/* Logo Section */}
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <div 
-          className="flex items-center gap-3 cursor-pointer" 
+        <div
+          className="flex items-center gap-3 cursor-pointer"
           onClick={() => navigate("/")}
         >
           <ThemeLogo size="md" />
@@ -62,7 +62,7 @@ export function AppSidebar() {
                     className={cn(
                       "transition-all duration-200",
                       isActive(item.url) &&
-                        "bg-gradient-to-r from-primary/20 to-accent/20 text-primary border-l-2 border-primary"
+                      "bg-primary/10 text-primary font-bold shadow-sm"
                     )}
                   >
                     <item.icon className={cn(

@@ -1,20 +1,13 @@
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  getDownloadHistory, 
-  clearDownloadHistory, 
-  deleteDownloadHistoryItem,
-  regeneratePDF,
-  DownloadHistoryItem 
-} from "@/utils/pdfExport";
-import { 
-  FileText, 
-  Trash2, 
-  Clock, 
-  Download, 
+import { useDownloadHistory } from "@/hooks/useDownloadHistory";
+import {
+  FileText,
+  Trash2,
+  Clock,
+  Download,
   AlertCircle,
   History,
   FileDown,
@@ -50,36 +43,23 @@ const itemVariants = {
 };
 
 export default function DownloadHistoryPage() {
-  const [history, setHistory] = useState<DownloadHistoryItem[]>([]);
+  const { history, loading, refetch, deleteItem, clearAll } = useDownloadHistory();
 
-  useEffect(() => {
-    setHistory(getDownloadHistory());
-  }, []);
-
-  const handleClearAll = () => {
-    clearDownloadHistory();
-    setHistory([]);
-    toast.success("Download history cleared");
-  };
-
-  const handleDeleteItem = (id: string) => {
-    deleteDownloadHistoryItem(id);
-    setHistory(getDownloadHistory());
-    toast.success("Item removed from history");
-  };
-
-  const handleRedownload = (item: DownloadHistoryItem) => {
+  const handleClearAll = async () => {
     try {
-      if (!item.analysisData) {
-        toast.error("Analysis data not available for this report. Only newer downloads support re-downloading.");
-        return;
-      }
-      regeneratePDF(item);
-      setHistory(getDownloadHistory()); // Refresh to show the new download
-      toast.success("PDF report re-downloaded successfully!");
-    } catch (error) {
-      console.error("Re-download error:", error);
-      toast.error("Failed to re-download PDF report");
+      await clearAll();
+      toast.success("Download history cleared");
+    } catch {
+      toast.error("Failed to clear history");
+    }
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await deleteItem(id);
+      toast.success("Item removed from history");
+    } catch {
+      toast.error("Failed to delete item");
     }
   };
 
@@ -113,39 +93,44 @@ export default function DownloadHistoryPage() {
               Download History
             </h1>
             <p className="text-muted-foreground mt-1">
-              Track and re-download your PDF reports
+              Track your PDF report downloads
             </p>
           </div>
         </div>
-        
-        {history.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" className="text-destructive hover:text-destructive border-destructive/30">
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clear All
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-destructive" />
-                  Clear Download History?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete all {history.length} items from your download history.
-                  This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleClearAll} className="bg-destructive hover:bg-destructive/90">
+
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={refetch} title="Refresh">
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+          {history.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="text-destructive hover:text-destructive border-destructive/30">
+                  <Trash2 className="w-4 h-4 mr-2" />
                   Clear All
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-destructive" />
+                    Clear Download History?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all {history.length} items from your download history.
+                    This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAll} className="bg-destructive hover:bg-destructive/90">
+                    Clear All
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </motion.div>
 
       {/* Stats Card */}
@@ -161,8 +146,8 @@ export default function DownloadHistoryPage() {
                 <div className="h-12 w-px bg-border" />
                 <div className="text-center">
                   <div className="text-3xl font-bold text-accent">
-                    {history.length > 0 
-                      ? Math.round(history.reduce((acc, item) => acc + item.score, 0) / history.length) 
+                    {history.length > 0
+                      ? Math.round(history.reduce((acc, item) => acc + item.score, 0) / history.length)
                       : 0}%
                   </div>
                   <div className="text-sm text-muted-foreground">Average Score</div>
@@ -174,21 +159,19 @@ export default function DownloadHistoryPage() {
                   </div>
                   <div className="text-sm text-muted-foreground">High Scores (70%+)</div>
                 </div>
-                <div className="h-12 w-px bg-border" />
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-accent">
-                    {history.filter(item => item.analysisData).length}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Re-downloadable</div>
-                </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
       )}
 
-      {/* Empty State */}
-      {history.length === 0 ? (
+      {/* Loading State */}
+      {loading ? (
+        <motion.div variants={itemVariants} className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+        </motion.div>
+      ) : history.length === 0 ? (
+        /* Empty State */
         <motion.div variants={itemVariants}>
           <Card variant="gradient-underline">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
@@ -236,47 +219,30 @@ export default function DownloadHistoryPage() {
                       <div className="p-3 bg-background rounded-lg shadow-sm border border-border/50">
                         <FileText className="w-6 h-6 text-accent" />
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1.5">
                           <span className="font-semibold text-foreground truncate text-lg">
-                            {item.jobTitle}
+                            {item.job_title || 'General Analysis'}
                           </span>
                           <Badge variant={getScoreBadgeVariant(item.score)} className="shrink-0">
                             <span className={getScoreColor(item.score)}>
                               {item.score}%
                             </span>
                           </Badge>
-                          {item.analysisData && (
-                            <Badge variant="outline" className="shrink-0 text-xs">
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                              Re-downloadable
-                            </Badge>
-                          )}
                         </div>
                         <div className="flex items-center gap-3 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1.5">
                             <Clock className="w-4 h-4" />
-                            {format(new Date(item.downloadedAt), "MMM d, yyyy 'at' h:mm a")}
+                            {format(new Date(item.downloaded_at), "MMM d, yyyy 'at' h:mm a")}
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground/70 truncate mt-1">
-                          {item.fileName}
+                          {item.file_name}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {item.analysisData && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => handleRedownload(item)}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Re-download
-                          </Button>
-                        )}
                         <Button
                           variant="ghost"
                           size="icon"

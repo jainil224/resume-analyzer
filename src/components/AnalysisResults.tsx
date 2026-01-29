@@ -6,10 +6,10 @@ import { SkillTag } from "./SkillTag";
 import { SuggestionCard } from "./SuggestionCard";
 import { ShareButtons } from "./ShareButtons";
 import { generateAnalysisPDF } from "@/utils/pdfExport";
-import { 
-  Target, 
-  Briefcase, 
-  FileCheck, 
+import {
+  Target,
+  Briefcase,
+  FileCheck,
   Sparkles,
   TrendingUp,
   TrendingDown,
@@ -53,6 +53,18 @@ const itemVariants = {
 };
 
 export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
+  if (!data || typeof data.overall_score === 'undefined') {
+    return (
+      <Card className="p-10 text-center space-y-4 shadow-xl">
+        <AlertCircle className="w-12 h-12 text-destructive mx-auto" />
+        <CardTitle>Incomplete Analysis Data</CardTitle>
+        <CardDescription>
+          Something went wrong with the AI analysis. Please try again.
+        </CardDescription>
+      </Card>
+    );
+  }
+
   const getScoreMessage = () => {
     if (data.overall_score >= 80) return { title: "Excellent Match!", color: "text-success" };
     if (data.overall_score >= 60) return { title: "Good Potential", color: "text-success" };
@@ -81,8 +93,8 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
     >
       {/* Export & Share Actions */}
       <motion.div variants={itemVariants} className="flex justify-end">
-        <ShareButtons 
-          score={data.overall_score} 
+        <ShareButtons
+          score={data.overall_score}
           onExportPDF={handleExportPDF}
           showExport={true}
         />
@@ -94,7 +106,7 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
-            
+
             <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
               {/* Score Circle */}
               <div className="relative">
@@ -106,18 +118,18 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
                   variant="hero"
                 />
               </div>
-              
+
               {/* Score Info */}
               <div className="flex-1 text-center md:text-left">
-                <Badge variant="ai" className="mb-4 backdrop-blur-sm">
+                <Badge variant="ai" className="mb-4 backdrop-blur-sm bg-white/10 text-white border-white/20 hover:bg-white/20">
                   <Zap className="w-3 h-3 mr-1" />
                   AI Powered Analysis
                 </Badge>
-                <h2 className={`text-3xl md:text-4xl font-bold text-primary-foreground mb-3 ${scoreMessage.color === 'text-success' ? '' : ''}`}>
-                  <span className="text-success">{scoreMessage.title}</span>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  {scoreMessage.title}
                 </h2>
-                <p className="text-primary-foreground/80 max-w-lg text-base md:text-lg leading-relaxed">
-                  Your resume has been analyzed against the job description. 
+                <p className="text-white/80 max-w-lg text-base md:text-lg leading-relaxed">
+                  Your resume has been analyzed against the job description.
                   Review the insights below to improve your chances.
                 </p>
               </div>
@@ -130,10 +142,10 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { score: data.skills_match, label: "Skills Match", icon: Target, max: 40, color: "text-success" },
-            { score: data.experience_score, label: "Experience", icon: Briefcase, max: 30, color: "text-foreground" },
-            { score: data.ats_score, label: "ATS Score", icon: FileCheck, max: 20, color: "text-accent" },
-            { score: data.formatting_score, label: "Formatting", icon: Sparkles, max: 10, color: "text-success" },
+            { score: data.skills_match, label: "Skills Match", icon: Target, max: 100, color: "text-primary" },
+            { score: data.experience_score, label: "Experience", icon: Briefcase, max: 100, color: "text-primary" },
+            { score: data.ats_score, label: "ATS Score", icon: FileCheck, max: 100, color: "text-primary" },
+            { score: data.formatting_score, label: "Formatting", icon: Sparkles, max: 100, color: "text-primary" },
           ].map((item) => (
             <motion.div
               key={item.label}

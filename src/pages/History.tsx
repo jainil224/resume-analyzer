@@ -1,79 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScoreCircle } from "@/components/ScoreCircle";
-import { 
-  Brain, 
-  Zap, 
-  ArrowLeft, 
-  Trash2, 
+import {
+  Brain,
+  ArrowLeft,
+  Trash2,
   GitCompare,
   Calendar,
   FileText,
-  Briefcase
+  Briefcase,
+  RefreshCw
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAnalysisHistory } from "@/hooks/useAnalysisHistory";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
-interface Analysis {
-  id: string;
-  resume_name: string;
-  job_title: string | null;
-  overall_score: number;
-  skills_match: number;
-  experience_score: number;
-  ats_score: number;
-  formatting_score: number;
-  matched_skills: string[];
-  missing_skills: string[];
-  strengths: string[];
-  weaknesses: string[];
-  ai_suggestions: string[];
-  created_at: string;
-}
-
 export default function History() {
-  const [analyses, setAnalyses] = useState<Analysis[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { history, loading, error, refetch, deleteAnalysis } = useAnalysisHistory();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchAnalyses();
-  }, []);
-
-  const fetchAnalyses = async () => {
-    const { data, error } = await supabase
-      .from("analyses")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error("Failed to load history");
-      console.error(error);
-    } else {
-      setAnalyses(data || []);
-    }
-    setLoading(false);
-  };
-
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("analyses")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to delete analysis");
-    } else {
-      setAnalyses(analyses.filter((a) => a.id !== id));
-      setSelectedIds(selectedIds.filter((sid) => sid !== id));
+    try {
+      await deleteAnalysis(id);
       toast.success("Analysis deleted");
+    } catch (err) {
+      toast.error("Failed to delete analysis");
     }
   };
 
@@ -93,13 +50,6 @@ export default function History() {
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-success";
-    if (score >= 60) return "text-accent";
-    if (score >= 40) return "text-warning";
-    return "text-destructive";
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -116,12 +66,17 @@ export default function History() {
               <span className="font-bold text-lg">Analysis History</span>
             </div>
           </div>
-          {selectedIds.length === 2 && (
-            <Button variant="hero" onClick={handleCompare}>
-              <GitCompare className="w-4 h-4 mr-2" />
-              Compare Selected
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={refetch} title="Refresh">
+              <RefreshCw className="w-4 h-4" />
             </Button>
-          )}
+            {selectedIds.length === 2 && (
+              <Button variant="hero" onClick={handleCompare}>
+                <GitCompare className="w-4 h-4 mr-2" />
+                Compare Selected
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -130,7 +85,16 @@ export default function History() {
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
           </div>
-        ) : analyses.length === 0 ? (
+        ) : error ? (
+          <Card variant="glass" className="text-center py-12">
+            <CardContent>
+              <p className="text-destructive mb-4">{error}</p>
+              <Button variant="outline" onClick={refetch}>
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        ) : history.length === 0 ? (
           <Card variant="glass" className="text-center py-12">
             <CardContent>
               <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
@@ -138,7 +102,7 @@ export default function History() {
               <p className="text-muted-foreground mb-4">
                 Start by analyzing your first resume
               </p>
-              <Button variant="hero" onClick={() => navigate("/")}>
+              <Button variant="hero" onClick={() => navigate("/analyze")}>
                 Analyze Resume
               </Button>
             </CardContent>
@@ -151,7 +115,7 @@ export default function History() {
                   ? `${selectedIds.length} selected for comparison`
                   : "Select 2 analyses to compare"}
               </p>
-              <Badge variant="outline">{analyses.length} analyses</Badge>
+              <Badge variant="outline">{history.length} analyses</Badge>
             </div>
 
             <motion.div
@@ -159,7 +123,7 @@ export default function History() {
               animate={{ opacity: 1 }}
               className="grid gap-4"
             >
-              {analyses.map((analysis, index) => (
+              {history.map((analysis, index) => (
                 <motion.div
                   key={analysis.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -168,7 +132,7 @@ export default function History() {
                 >
                   <Card
                     variant={selectedIds.includes(analysis.id) ? "accent" : "gradient-underline"}
-                    className="hover:shadow-lg"
+                    className="hover:shadow-lg cursor-pointer"
                     onClick={() => toggleSelect(analysis.id)}
                   >
                     <CardContent className="p-4">

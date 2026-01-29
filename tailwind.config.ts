@@ -80,6 +80,7 @@ export default {
         card: "var(--shadow-card)",
         glow: "var(--shadow-glow)",
       },
+
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -105,6 +106,11 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "border-beam": {
+          "100%": {
+            "offset-distance": "100%",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -113,6 +119,7 @@ export default {
         "scale-in": "scale-in 0.3s ease-out",
         "slide-up": "slide-up 0.5s ease-out",
         shimmer: "shimmer 2s infinite linear",
+        "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
       },
     },
   },

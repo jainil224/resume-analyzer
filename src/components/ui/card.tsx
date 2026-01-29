@@ -2,6 +2,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 const cardVariants = cva(
   "rounded-2xl border text-card-foreground",
@@ -13,7 +14,7 @@ const cardVariants = cva(
         outline: "bg-transparent border-2",
         glass: "bg-card/80 backdrop-blur-sm border-border/50",
         accent: "bg-card shadow-card border-accent/20 hover:border-accent/40 transition-colors",
-        "gradient-underline": "bg-card shadow-card group relative overflow-hidden cursor-pointer transition-all duration-300 hover:border-accent/50 before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-gradient-to-r before:from-[#ff0000] before:to-[#00ffff] before:transform before:scale-x-0 before:origin-right before:transition-transform before:duration-400 before:ease-out hover:before:scale-x-100 hover:before:origin-left after:absolute after:top-0 after:left-0 after:w-full after:h-[2px] after:bg-gradient-to-r after:from-[#00ffff] after:to-[#ff0000] after:transform after:scale-x-0 after:origin-left after:transition-transform after:duration-400 after:ease-out hover:after:scale-x-100 hover:after:origin-right",
+        "gradient-underline": "bg-card shadow-card group relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
       },
     },
     defaultVariants: {
@@ -24,15 +25,37 @@ const cardVariants = cva(
 
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+  VariantProps<typeof cardVariants> { }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, ...props }, ref) => (
+  ({ className, variant, children, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(cardVariants({ variant, className }))}
       {...props}
-    />
+    >
+      {children}
+      {variant === "gradient-underline" && (
+        <>
+          <BorderBeam
+            size={300}
+            duration={8}
+            colorFrom="#ef4444" // red-500
+            colorTo="#ef4444"
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          />
+          <BorderBeam
+            size={300}
+            duration={8}
+            delay={-4} // Negative delay to start immediately at 50% offset
+            borderWidth={2}
+            colorFrom="#3b82f6" // blue-500
+            colorTo="#3b82f6"
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          />
+        </>
+      )}
+    </div>
   )
 );
 Card.displayName = "Card";

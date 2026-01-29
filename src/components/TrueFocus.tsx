@@ -18,8 +18,8 @@ const TrueFocus = ({
   separator = ' ',
   manualMode = false,
   blurAmount = 5,
-  borderColor = 'hsl(var(--primary))',
-  glowColor = 'hsl(var(--primary) / 0.6)',
+  borderColor = 'green',
+  glowColor = 'rgba(0, 255, 0, 0.6)',
   animationDuration = 0.5,
   pauseBetweenAnimations = 1
 }: TrueFocusProps) => {
@@ -38,16 +38,18 @@ const TrueFocus = ({
         },
         (animationDuration + pauseBetweenAnimations) * 1000
       );
+
       return () => clearInterval(interval);
     }
   }, [manualMode, animationDuration, pauseBetweenAnimations, words.length]);
 
   useEffect(() => {
     if (currentIndex === null || currentIndex === -1) return;
+
     if (!wordRefs.current[currentIndex] || !containerRef.current) return;
 
     const parentRect = containerRef.current.getBoundingClientRect();
-    const activeRect = wordRefs.current[currentIndex].getBoundingClientRect();
+    const activeRect = wordRefs.current[currentIndex]!.getBoundingClientRect();
 
     setFocusRect({
       x: activeRect.left - parentRect.left,
@@ -80,7 +82,13 @@ const TrueFocus = ({
             ref={el => (wordRefs.current[index] = el)}
             className={`focus-word ${manualMode ? 'manual' : ''} ${isActive && !manualMode ? 'active' : ''}`}
             style={{
-              filter: isActive ? `blur(0px)` : `blur(${blurAmount}px)`,
+              filter: manualMode
+                ? isActive
+                  ? `blur(0px)`
+                  : `blur(${blurAmount}px)`
+                : isActive
+                  ? `blur(0px)`
+                  : `blur(${blurAmount}px)`,
               '--border-color': borderColor,
               '--glow-color': glowColor,
               transition: `filter ${animationDuration}s ease`
@@ -92,6 +100,7 @@ const TrueFocus = ({
           </span>
         );
       })}
+
       <motion.div
         className="focus-frame"
         animate={{

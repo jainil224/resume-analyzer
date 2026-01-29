@@ -63,7 +63,7 @@ const tourSteps: TourStep[] = [
     title: "AI Assistant",
     description: "Click the robot avatar in the bottom-right corner anytime to chat with our AI career expert!",
     icon: Bot,
-    position: "bottom-right"
+    position: "center"
   }
 ];
 

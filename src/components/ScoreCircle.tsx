@@ -90,23 +90,15 @@ export function ScoreCircle({
             transition={{ duration: 0.5, delay: 0.5 }}
           >
             {score}
+            <span className="text-[0.5em] ml-0.5 align-top">%</span>
           </motion.span>
-          {showPercentage && (
-            <span className={cn(
-              config.labelSize,
-              "font-medium",
-              variant === "hero" ? "text-primary-foreground/60" : "text-muted-foreground"
-            )}>
-              / {maxScore}
-            </span>
-          )}
         </div>
       </div>
       {label && (
         <span className={cn(
           config.labelSize,
           "font-medium",
-          variant === "hero" ? "text-primary-foreground/70" : "text-muted-foreground"
+          variant === "hero" ? "text-white/70" : "text-muted-foreground"
         )}>
           {label}
         </span>
@@ -114,3 +106,4 @@ export function ScoreCircle({
     </div>
   );
 }
+

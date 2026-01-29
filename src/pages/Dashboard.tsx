@@ -1,109 +1,138 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { StatsCards } from "@/components/dashboard/StatsCards";
-import { ATSDistributionChart } from "@/components/dashboard/ATSDistributionChart";
-import { SkillsChart } from "@/components/dashboard/SkillsChart";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
-import { SkillGapAnalysis } from "@/components/dashboard/SkillGapAnalysis";
-import { ATSOptimizationTracker } from "@/components/dashboard/ATSOptimizationTracker";
-import { KeywordAnalysis } from "@/components/dashboard/KeywordAnalysis";
-import { AIRecommendations } from "@/components/dashboard/AIRecommendations";
-import { UserProgressTracker } from "@/components/dashboard/UserProgressTracker";
-import { ExportCenter } from "@/components/dashboard/ExportCenter";
-import { SystemStatus } from "@/components/dashboard/SystemStatus";
-import { Sparkles } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+    Target,
+    Shield,
+    TrendingUp,
+    ArrowRight,
+    Github,
+    Linkedin,
+    FileText
+} from "lucide-react";
+import TrueFocus from "@/components/TrueFocus";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { data, loading } = useDashboardData();
+    const navigate = useNavigate();
 
-  // Get AI suggestions from most recent analysis
-  const latestSuggestions = data?.recentAnalyses[0]?.ai_suggestions || [];
+    const features = [
+        {
+            icon: Target,
+            title: "Skill Matching",
+            desc: "AI identifies matching & missing skills",
+        },
+        {
+            icon: Shield,
+            title: "ATS Optimized",
+            desc: "Beat applicant tracking systems",
+        },
+        {
+            icon: TrendingUp,
+            title: "Smart Suggestions",
+            desc: "Personalized improvement tips",
+        },
+    ];
 
-  if (loading) {
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+            },
+        },
+    };
+
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 }
+        },
+    };
+
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
+        <div className="flex flex-col min-h-[calc(100vh-65px)] bg-background font-analyzer overflow-x-hidden">
+            <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 md:py-24 relative">
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="max-w-6xl w-full space-y-16 z-10 flex flex-col items-center"
+                >
+                    {/* Hero Section */}
+                    <motion.div variants={itemVariants} className="text-center space-y-8">
+                        <div className="flex justify-center scale-90 md:scale-100">
+                            <TrueFocus
+                                sentence="Welcome to Resume Analyzer"
+                                manualMode={false}
+                                blurAmount={5}
+                                borderColor="#5227FF"
+                                glowColor="rgba(82, 39, 255, 0.4)"
+                                animationDuration={0.5}
+                                pauseBetweenAnimations={1}
+                            />
+                        </div>
+
+                        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-normal px-4">
+                            Get instant AI-powered feedback on your resume. Optimize for ATS, match skills to job requirements, and land more interviews.
+                        </p>
+                    </motion.div>
+
+                    {/* Features Grid */}
+                    <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-8 w-full max-w-6xl">
+                        {features.map((feature, idx) => (
+                            <Card key={idx} variant="gradient-underline" className="hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
+                                <CardContent className="p-8 md:p-10 flex flex-col items-center text-center space-y-6">
+                                    <div className="p-4 bg-accent/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                                        <feature.icon className="w-8 h-8 text-accent" />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <h3 className="text-xl font-bold text-foreground">{feature.title}</h3>
+                                        <p className="text-sm text-muted-foreground leading-relaxed font-medium">{feature.desc}</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </motion.div>
+
+                    {/* Action Area */}
+                    <motion.div variants={itemVariants} className="text-center pt-4">
+                        <Button
+                            size="xl"
+                            className="bg-[#4eaeff] hover:bg-[#3d9def] text-white px-12 py-9 text-xl font-bold rounded-2xl shadow-[0_20px_50px_rgba(78,174,255,0.3)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] group flex items-center gap-4"
+                            onClick={() => navigate("/analyze")}
+                        >
+                            <FileText className="w-6 h-6" />
+                            Analyze Resume Now
+                            <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </main>
+
+            {/* Footer */}
+            <footer className="w-full py-16 mt-auto">
+                <div className="container mx-auto px-6 flex flex-col items-center gap-8">
+                    <div className="flex items-center gap-10">
+                        <a href="#" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
+                            <Github className="w-7 h-7" />
+                        </a>
+                        <a href="#" className="text-muted-foreground hover:text-[#4eaeff] transition-all duration-300 hover:scale-110">
+                            <Linkedin className="w-7 h-7" />
+                        </a>
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium flex flex-col items-center gap-3">
+                        <div className="flex items-center gap-3 opacity-90 text-[15px]">
+                            <span>© 2025</span>
+                            <span className="opacity-40">|</span>
+                            <span>Developed by <span className="text-foreground font-bold">Jainil Patel</span></span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
     );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-      >
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Here's your resume analytics overview.</p>
-        </div>
-        <Button variant="hero" onClick={() => navigate("/analyze")}>
-          <Sparkles className="w-4 h-4" />
-          New Analysis
-        </Button>
-      </motion.div>
-
-      {/* Quick Stats */}
-      <StatsCards
-        totalResumes={data?.totalResumes || 0}
-        analyzedResumes={data?.analyzedResumes || 0}
-        totalCandidates={data?.totalResumes || 0}
-        averageAtsScore={data?.averageAtsScore || 0}
-        skillGapsDetected={data?.skillGapsDetected || 0}
-      />
-
-      {/* Charts Row */}
-      <div className="grid lg:grid-cols-3 gap-4">
-        <ATSDistributionChart distribution={data?.atsDistribution || { low: 0, medium: 0, high: 0 }} />
-        <div className="lg:col-span-2">
-          <SkillsChart
-            topSkills={data?.topSkills || []}
-            missingSkills={data?.missingSkills || []}
-          />
-        </div>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-4">
-        {/* Left Column */}
-        <div className="lg:col-span-2 space-y-4">
-          <RecentActivity analyses={data?.recentAnalyses || []} />
-          <AIRecommendations suggestions={latestSuggestions} />
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-4">
-          <SkillGapAnalysis
-            missingSkills={data?.missingSkills || []}
-            totalAnalyses={data?.totalResumes || 0}
-          />
-          <ATSOptimizationTracker
-            averageAtsScore={data?.averageAtsScore || 0}
-            totalAnalyses={data?.totalResumes || 0}
-            atsDistribution={data?.atsDistribution || { low: 0, medium: 0, high: 0 }}
-          />
-        </div>
-      </div>
-
-      {/* Bottom Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KeywordAnalysis
-          usedKeywords={data?.keywordStats?.used || []}
-          missingKeywords={data?.keywordStats?.missing || []}
-        />
-        <UserProgressTracker
-          profileCompletion={data?.progressStats?.profileCompletion || 0}
-          resumeStrength={data?.progressStats?.resumeStrength || 0}
-          skillsImprovement={data?.progressStats?.skillsImprovement || 0}
-        />
-        <ExportCenter />
-        <SystemStatus totalAnalyses={data?.totalResumes || 0} />
-      </div>
-    </div>
-  );
 }

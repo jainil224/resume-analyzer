@@ -1,7 +1,7 @@
 .focus-container {
   position: relative;
   display: flex;
-  gap: 0.4em;
+  gap: 1em;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -11,15 +11,14 @@
 
 .focus-word {
   position: relative;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: 900;
   cursor: pointer;
   transition:
     filter 0.3s ease,
     color 0.3s ease;
   outline: none;
   user-select: none;
-  color: hsl(var(--foreground));
 }
 
 .focus-word.active {
@@ -37,38 +36,38 @@
 
 .corner {
   position: absolute;
-  width: 0.8rem;
-  height: 0.8rem;
-  border: 3px solid var(--border-color, hsl(var(--primary)));
-  filter: drop-shadow(0px 0px 4px var(--glow-color, hsl(var(--primary) / 0.6)));
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid var(--border-color, #fff);
+  filter: drop-shadow(0px 0px 4px var(--border-color, #fff));
   border-radius: 3px;
   transition: none;
 }
 
 .top-left {
-  top: -8px;
-  left: -8px;
+  top: -10px;
+  left: -10px;
   border-right: none;
   border-bottom: none;
 }
 
 .top-right {
-  top: -8px;
-  right: -8px;
+  top: -10px;
+  right: -10px;
   border-left: none;
   border-bottom: none;
 }
 
 .bottom-left {
-  bottom: -8px;
-  left: -8px;
+  bottom: -10px;
+  left: -10px;
   border-right: none;
   border-top: none;
 }
 
 .bottom-right {
-  bottom: -8px;
-  right: -8px;
+  bottom: -10px;
+  right: -10px;
   border-left: none;
   border-top: none;
 }
