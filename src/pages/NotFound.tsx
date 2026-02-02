@@ -15,7 +15,7 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -39,9 +39,20 @@ const NotFound = () => {
         >
           <h1 className="text-8xl font-bold text-primary mb-4">404</h1>
           <h2 className="text-2xl font-semibold text-foreground mb-2">Page Not Found</h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-6">
             Oops! The page you're looking for doesn't exist or has been moved.
           </p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="mb-8 p-4 rounded-xl bg-primary/5 border border-primary/20 backdrop-blur-sm"
+          >
+            <p className="text-sm font-medium text-foreground">
+              The <span className="text-primary font-bold">Compare</span> feature is currently under development and will be available soon. Stay tuned — something awesome is coming 🚀
+            </p>
+          </motion.div>
         </motion.div>
 
         {/* Suggested path */}
@@ -67,16 +78,16 @@ const NotFound = () => {
           transition={{ delay: 0.5 }}
           className="flex flex-col sm:flex-row gap-3 justify-center"
         >
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate(-1)}
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
           </Button>
-          <Button 
-            variant="hero" 
+          <Button
+            variant="hero"
             onClick={() => navigate("/")}
             className="gap-2"
           >
@@ -86,7 +97,7 @@ const NotFound = () => {
         </motion.div>
 
         {/* Footer */}
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}

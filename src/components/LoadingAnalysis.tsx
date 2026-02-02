@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Sparkles, FileSearch, Brain, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeLogo } from "@/components/ThemeLogo";
 
 const steps = [
   { icon: FileSearch, label: "Parsing resume..." },
@@ -18,7 +19,7 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
     <div className="flex flex-col items-center justify-center py-16 px-4">
       {/* Animated AI Icon */}
       <motion.div
-        className="relative mb-8"
+        className="mb-8"
         animate={{
           scale: [1, 1.1, 1],
         }}
@@ -28,21 +29,7 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
           ease: "easeInOut",
         }}
       >
-        <div className="p-6 bg-accent-gradient rounded-full shadow-glow">
-          <Brain className="w-12 h-12 text-accent-foreground" />
-        </div>
-        <motion.div
-          className="absolute inset-0 rounded-full bg-accent/20"
-          animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.5, 0, 0.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeOut",
-          }}
-        />
+        <ThemeLogo size="xl" />
       </motion.div>
 
       {/* Title */}
@@ -64,8 +51,8 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
               index < currentStep
                 ? "bg-success/10"
                 : index === currentStep
-                ? "bg-accent/10"
-                : "bg-secondary/50"
+                  ? "bg-accent/10"
+                  : "bg-secondary/50"
             )}
           >
             <div
@@ -74,8 +61,8 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
                 index < currentStep
                   ? "bg-success/20"
                   : index === currentStep
-                  ? "bg-accent/20"
-                  : "bg-muted"
+                    ? "bg-accent/20"
+                    : "bg-muted"
               )}
             >
               <step.icon
@@ -84,8 +71,8 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
                   index < currentStep
                     ? "text-success"
                     : index === currentStep
-                    ? "text-accent"
-                    : "text-muted-foreground"
+                      ? "text-accent"
+                      : "text-muted-foreground"
                 )}
               />
             </div>
@@ -95,8 +82,8 @@ export function LoadingAnalysis({ currentStep = 1 }: LoadingAnalysisProps) {
                 index < currentStep
                   ? "text-success"
                   : index === currentStep
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
               )}
             >
               {step.label}

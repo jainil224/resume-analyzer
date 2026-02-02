@@ -128,12 +128,42 @@ export function useAnalysisHistory() {
         }
     }, []);
 
+    const deleteAnalyses = useCallback(async (ids: string[]) => {
+        if (!isSupabaseConfigured() || !supabase) {
+            // Delete from localStorage
+            const stored = localStorage.getItem('lovable_local_candidates');
+            if (stored) {
+                const localData = JSON.parse(stored);
+                // Filter out any record whose id is in the ids array
+                const updated = localData.filter((c: any) => !ids.includes(c.id));
+                localStorage.setItem('lovable_local_candidates', JSON.stringify(updated));
+                setHistory(prev => prev.filter(h => !ids.includes(h.id)));
+            }
+            return;
+        }
+
+        try {
+            const { error: deleteError } = await supabase
+                .from('analysis_history')
+                .delete()
+                .in('id', ids);
+
+            if (deleteError) throw deleteError;
+
+            setHistory(prev => prev.filter(h => !ids.includes(h.id)));
+        } catch (err: any) {
+            console.error('Error deleting analyses:', err);
+            throw err;
+        }
+    }, []);
+
     return {
         history,
         loading,
         error,
         refetch: fetchHistory,
         deleteAnalysis,
+        deleteAnalyses,
     };
 }
 

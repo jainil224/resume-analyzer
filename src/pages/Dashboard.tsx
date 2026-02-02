@@ -102,7 +102,7 @@ export default function Dashboard() {
                     <motion.div variants={itemVariants} className="text-center pt-4">
                         <Button
                             size="xl"
-                            className="bg-[#4eaeff] hover:bg-[#3d9def] text-white px-12 py-9 text-xl font-bold rounded-2xl shadow-[0_20px_50px_rgba(78,174,255,0.3)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] group flex items-center gap-4"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-9 text-xl font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] group flex items-center gap-4"
                             onClick={() => navigate("/analyze")}
                         >
                             <FileText className="w-6 h-6" />

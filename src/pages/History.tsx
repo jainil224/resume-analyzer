@@ -23,7 +23,7 @@ import { format } from "date-fns";
 import { generateAnalysisPDF } from "@/utils/pdfExport";
 
 export default function History() {
-  const { history, loading, error, refetch, deleteAnalysis } = useAnalysisHistory();
+  const { history, loading, error, refetch, deleteAnalysis, deleteAnalyses } = useAnalysisHistory();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const navigate = useNavigate();
 
@@ -33,6 +33,17 @@ export default function History() {
       toast.success("Analysis deleted");
     } catch (err) {
       toast.error("Failed to delete analysis");
+    }
+  };
+
+
+  const handleDeleteSelected = async () => {
+    try {
+      await deleteAnalyses(selectedIds);
+      setSelectedIds([]);
+      toast.success("Analyses deleted");
+    } catch (err) {
+      toast.error("Failed to delete analyses");
     }
   };
 
@@ -49,16 +60,24 @@ export default function History() {
   const toggleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(selectedIds.filter((sid) => sid !== id));
-    } else if (selectedIds.length < 2) {
-      setSelectedIds([...selectedIds, id]);
     } else {
-      toast.info("You can compare up to 2 analyses");
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === history.length && history.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(history.map(item => item.id));
     }
   };
 
   const handleCompare = () => {
     if (selectedIds.length === 2) {
       navigate(`/compare?ids=${selectedIds.join(",")}`);
+    } else {
+      toast.info("Please select exactly 2 analyses to compare");
     }
   };
 
@@ -72,9 +91,7 @@ export default function History() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-accent-gradient rounded-lg">
-                <Brain className="w-5 h-5 text-accent-foreground" />
-              </div>
+
               <span className="font-bold text-lg">Analysis History</span>
             </div>
           </div>
@@ -82,11 +99,17 @@ export default function History() {
             <Button variant="ghost" size="icon" onClick={refetch} title="Refresh">
               <RefreshCw className="w-4 h-4" />
             </Button>
-            {selectedIds.length === 2 && (
-              <Button variant="hero" onClick={handleCompare}>
-                <GitCompare className="w-4 h-4 mr-2" />
-                Compare Selected
-              </Button>
+            {selectedIds.length > 0 && (
+              <>
+                <Button variant="destructive" onClick={handleDeleteSelected}>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Selected
+                </Button>
+                <Button variant="hero" onClick={handleCompare}>
+                  <GitCompare className="w-4 h-4 mr-2" />
+                  Compare Selected
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -122,11 +145,17 @@ export default function History() {
         ) : (
           <>
             <div className="mb-6 flex items-center justify-between">
-              <p className="text-muted-foreground">
-                {selectedIds.length > 0
-                  ? `${selectedIds.length} selected for comparison`
-                  : "Select 2 analyses to compare"}
-              </p>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={selectedIds.length === history.length && history.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+                <p className="text-muted-foreground">
+                  {selectedIds.length > 0
+                    ? `${selectedIds.length} selected`
+                    : "Select analyses"}
+                </p>
+              </div>
               <Badge variant="outline">{history.length} analyses</Badge>
             </div>
 
