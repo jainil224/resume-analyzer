@@ -1,7 +1,7 @@
 # 📄 AI Resume Analyzer
 
 🚀 **Live Demo:**  
-👉 [https://resume-analyzer22.vercel.app/](https://resume-analyzerai.vercel.app/)
+👉https://resume-analyzerai.vercel.app/
 
 An intelligent, AI-powered tool designed to analyze resumes against job descriptions, providing detailed insights, scores, and actionable suggestions to improve your hiring potential.
 
