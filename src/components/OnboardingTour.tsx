@@ -322,46 +322,52 @@ export function OnboardingTour() {
                 </p>
               </div>
 
-              {/* Footer: Progress + Buttons */}
-              <div className="flex items-center justify-between mt-auto">
+              {/* Footer: Controls */}
+              <div className="flex items-center justify-between mt-auto gap-4">
 
-                {/* Progress Indicator */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {currentStepIndex + 1} / {STEPS.length}
-                  </span>
-                  {/* Dots */}
-                  <div className="flex gap-1 ml-2">
-                    {STEPS.map((_, idx) => (
-                      <div
-                        key={idx}
-                        className={cn(
-                          "w-1.5 h-1.5 rounded-full transition-colors",
-                          idx === currentStepIndex ? "bg-primary" : "bg-muted"
-                        )}
-                      />
-                    ))}
-                  </div>
+                {/* Skip Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSkip}
+                  className="text-muted-foreground hover:text-foreground h-8 px-2 text-xs font-medium"
+                >
+                  Skip
+                </Button>
+
+                {/* Progress Indicator (Centered) */}
+                <div className="flex items-center gap-1">
+                  {STEPS.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "transition-all duration-300 rounded-full",
+                        idx === currentStepIndex
+                          ? "w-4 h-1.5 bg-primary"
+                          : "w-1.5 h-1.5 bg-primary/20"
+                      )}
+                    />
+                  ))}
                 </div>
 
-                {/* Controls */}
+                {/* Navigation Buttons */}
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={handlePrev}
                     disabled={currentStepIndex === 0}
-                    className="text-muted-foreground h-8 px-2"
+                    className="h-8 px-3 text-xs"
                   >
                     Back
                   </Button>
                   <Button
                     size="sm"
                     onClick={handleNext}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm h-8 px-4 gap-1.5"
+                    className="h-8 px-4 text-xs gap-1.5 shadow-sm"
                   >
                     {currentStepIndex === STEPS.length - 1 ? "Finish" : "Next"}
-                    {currentStepIndex < STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5" />}
+                    {currentStepIndex < STEPS.length - 1 && <ChevronRight className="w-3 h-3" />}
                   </Button>
                 </div>
               </div>

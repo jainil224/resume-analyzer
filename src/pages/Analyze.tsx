@@ -282,9 +282,7 @@ Return ONLY valid JSON with this exact structure:
                 </div>
               )}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <Badge variant="ai" className="mb-4">
-                  <Sparkles className="w-3 h-3 mr-1" />Resume Analyzer
-                </Badge>
+
                 <div className="mb-4">
                   <TrueFocus
                     sentence="Analyze Your Resume"
