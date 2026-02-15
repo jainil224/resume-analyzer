@@ -12,20 +12,21 @@ export function ThemeToggle() {
       className={`
         relative flex items-center gap-3 rounded-full px-2 py-2 
         transition-all duration-500 cursor-pointer hover:scale-105 active:scale-95
-        ${isDark 
-          ? "bg-slate-800 border border-slate-700" 
+        ${isDark
+          ? "bg-slate-800 border border-slate-700"
           : "bg-secondary border border-border"
         }
       `}
       aria-label="Toggle theme"
+      id="tour-theme-toggle"
     >
       {/* Animated circle container */}
       <motion.div
         layout
         className={`
           relative flex items-center justify-center w-10 h-10 rounded-full
-          ${isDark 
-            ? "bg-slate-700 order-last" 
+          ${isDark
+            ? "bg-slate-700 order-last"
             : "bg-primary order-first"
           }
         `}
@@ -101,7 +102,7 @@ export function ThemeToggle() {
       </motion.div>
 
       {/* Text label */}
-      <motion.span 
+      <motion.span
         layout
         className={`
           text-sm font-semibold tracking-wide whitespace-nowrap px-2

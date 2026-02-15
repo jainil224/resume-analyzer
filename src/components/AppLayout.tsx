@@ -7,6 +7,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { Zap } from "lucide-react";
 import { Robot3DChatbot } from "@/components/Robot3DChatbot";
 import { ThemeLogo } from "@/components/ThemeLogo";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -41,6 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </main>
         </div>
         <Robot3DChatbot />
+        <OnboardingTour />
       </div>
     </SidebarProvider>
   );

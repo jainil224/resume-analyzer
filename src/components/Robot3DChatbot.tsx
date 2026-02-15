@@ -497,6 +497,7 @@ Be concise, helpful, and encouraging. Use markdown formatting for better readabi
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={handleOpen}
+            id="tour-ai-chatbot"
           >
             <motion.div
               animate={{

@@ -68,7 +68,7 @@ export function ShareButtons({ score, onExportPDF, showExport = true }: ShareBut
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4" id="tour-share-btn">
       {showExport && onExportPDF && (
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button

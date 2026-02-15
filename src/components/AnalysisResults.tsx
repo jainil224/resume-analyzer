@@ -90,6 +90,7 @@ export function AnalysisResults({ data, jobTitle }: AnalysisResultsProps) {
       initial="hidden"
       animate="visible"
       className="space-y-6"
+      id="tour-results-section"
     >
       {/* Export & Share Actions */}
       <motion.div variants={itemVariants} className="flex justify-end">

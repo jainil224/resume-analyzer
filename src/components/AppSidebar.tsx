@@ -68,6 +68,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     onClick={() => handleNavigation(item.url)}
                     tooltip={item.title}
+                    id={item.title === "History" ? "tour-history-link" : undefined}
                     className={cn(
                       "transition-all duration-200",
                       isActive(item.url) &&

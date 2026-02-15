@@ -392,6 +392,7 @@ Return ONLY valid JSON with this exact structure:
                 variant="hero"
                 size="xl"
                 onClick={handleAnalyze}
+                id="tour-analyze-btn"
                 disabled={(!resumeFile && !resumeText.trim()) || !jobDescription.trim()}
               >
                 <Sparkles className="w-5 h-5" />
