@@ -5,7 +5,7 @@
 
 An intelligent, AI-powered tool designed to analyze resumes against job descriptions, providing detailed insights, scores, and actionable suggestions to improve your hiring potential.
 
------
+-------
 
 ## 🖼️ Preview
 
